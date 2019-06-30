@@ -1,2 +1,6 @@
 language: csharp
+mono: none
 solution: AspNetCore.Yandex.ObjectStorage.sln
+dotnet: 2.2.300
+script:
+ - dotnet restore
