@@ -3,6 +3,8 @@ dist: xenial
 language: csharp
 mono: none
 solution: AspNetCore.Yandex.ObjectStorage.sln
-dotnet: 2.2.300
+dotnet: 2.2
 script:
- - dotnet restore
+  - cd AspNetCore.Yandex.ObjectStorage
+  - dotnet restore
+  - dotnet build -c Release
