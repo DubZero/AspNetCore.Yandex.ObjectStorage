@@ -23,7 +23,7 @@ namespace AspNetCore.Yandex.ObjectStorage
         {
             _awsSecretKey = awsSecretKey;
             _service = service ?? "s3";
-            _region = region ?? "us-east-1";
+            _region = region ?? YandexStorageDefaults.Location;
         }
 
         /// <summary>
