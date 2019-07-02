@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Authors>Shumkin Alexandr</Authors>
+    <Description>S3 API realisation for Yandex Object Storage</Description>
+    <PackageProjectUrl>https://github.com/DubZero/AspNetCore.Yandex.ObjectStorage</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DubZero/AspNetCore.Yandex.ObjectStorage</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>S3, Yandex, Object Storage</PackageTags>
+    <PackageReleaseNotes>beta</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
