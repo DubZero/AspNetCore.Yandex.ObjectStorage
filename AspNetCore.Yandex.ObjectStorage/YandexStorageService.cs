@@ -33,11 +33,9 @@ namespace AspNetCore.Yandex.ObjectStorage
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}"));
             DateTime value = DateTime.UtcNow;
             
-            //requestMessage.Headers.TryAddWithoutValidation("Cache-Control", "no-cache");
             requestMessage.Headers.Add("Host",_endpoint);
             requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
             requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
-            //requestMessage.Headers.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
             
             string[] headers = {"host","x-amz-content-sha256", "x-amz-date" };
             string signature = calculator.CalculateSignature(requestMessage, headers, value);
@@ -107,7 +105,7 @@ namespace AspNetCore.Yandex.ObjectStorage
             return requestMessage;
         }
 
-        public async Task<bool> TryGet()
+        public async Task<bool> TryGetAsync()
         {
             var requestMessage = PrepareGetRequest();
             
@@ -125,7 +123,7 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
 
-        public async Task<string> PutObject(MemoryStream stream, string filename)
+        public async Task<string> PutObjectAsync(MemoryStream stream, string filename)
         {
             var requestMessage = PreparePutRequest(stream, filename);
             
@@ -144,7 +142,7 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
 
-        public async Task<bool> DeleteObject(string filename)
+        public async Task<bool> DeleteObjectAsync(string filename)
         {
             var requestMessage = PrepareDeleteRequest(filename);
 
