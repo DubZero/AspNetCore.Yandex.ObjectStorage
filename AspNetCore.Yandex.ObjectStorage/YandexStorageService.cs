@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace AspNetCore.Yandex.ObjectStorage
 {
@@ -15,15 +16,17 @@ namespace AspNetCore.Yandex.ObjectStorage
         private readonly string _secretKey;
         private readonly string _hostName;
         
-        public YandexStorageService(YandexStorageOptions options)
+        public YandexStorageService(IOptions<YandexStorageOptions> options)
         {
-            _protocol = options.Protocol;
-            _bucketName = options.BucketName;
-            _location = options.Location;
-            _endpoint = options.Endpoint;
-            _accessKey = options.AccessKey;
-            _secretKey = options.SecretKey;
-            _hostName = options.HostName;
+            var yandexStorageOptions = options.Value;
+            
+            _protocol = yandexStorageOptions.Protocol;
+            _bucketName = yandexStorageOptions.BucketName;
+            _location = yandexStorageOptions.Location;
+            _endpoint = yandexStorageOptions.Endpoint;
+            _accessKey = yandexStorageOptions.AccessKey;
+            _secretKey = yandexStorageOptions.SecretKey;
+            _hostName = yandexStorageOptions.HostName;
         }
         
         private HttpRequestMessage PrepareGetRequest()

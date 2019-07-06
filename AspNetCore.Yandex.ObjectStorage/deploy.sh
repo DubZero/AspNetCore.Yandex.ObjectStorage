@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ApiKey=$1
 Source=$2
 

@@ -7,6 +7,7 @@ dotnet: 2.2
 script:
   - cd AspNetCore.Yandex.ObjectStorage
   - dotnet restore
+  - dotnet test
   - dotnet build -c Release
 deploy:
  skip_cleanup: true
