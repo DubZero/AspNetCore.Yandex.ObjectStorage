@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Yandex.ObjectStorage", "AspNetCore.Yandex.ObjectStorage.csproj", "{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "..\Tests\Tests.csproj", "{8058C535-F8C2-4813-9FEF-96031CC88E01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "..\Tests\Tests.csproj", "{8058C535-F8C2-4813-9FEF-96031CC88E01}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "..\Sample\Sample.csproj", "{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8058C535-F8C2-4813-9FEF-96031CC88E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8058C535-F8C2-4813-9FEF-96031CC88E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8058C535-F8C2-4813-9FEF-96031CC88E01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
