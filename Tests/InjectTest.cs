@@ -1,5 +1,6 @@
 using AspNetCore.Yandex.ObjectStorage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
@@ -27,11 +28,16 @@ namespace Tests
             Assert.IsNotNull(service, "service is null");
             Assert.IsInstanceOfType(service, typeof(YandexStorageService), "type incorrect");
             
-            // Check options
+            var optionsService = (IOptions<YandexStorageOptions>)provider.GetService(typeof(IOptions<YandexStorageOptions>));
 
-//            var yandexObjService = (YandexStorageService) service;
-//            yandexObjService.
-
+            var yandexOptions = optionsService.Value;
+            
+            // Check options registration
+            Assert.AreEqual("bucket", yandexOptions.BucketName, "Bucket name not configured");
+            Assert.AreEqual("location", yandexOptions.Location, "Location not configured");
+            Assert.AreEqual("aKey", yandexOptions.AccessKey, "Access Key not configured");
+            Assert.AreEqual("sKey", yandexOptions.SecretKey, "Secret Key not configured");
+            Assert.AreEqual("endpoint", yandexOptions.Endpoint, "EndPoint not configured");
         }
     }
 }

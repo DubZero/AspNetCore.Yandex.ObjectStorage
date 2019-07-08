@@ -43,7 +43,12 @@ namespace AspNetCore.Yandex.ObjectStorage
             return GetSignature(requestDate, stringToSign);
         }
 
-        // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
+        /// <summary>
+        /// http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="signedHeaders"></param>
+        /// <returns></returns>
         private static string GetCanonicalRequest(HttpRequestMessage request, string[] signedHeaders)
         {
             var canonicalRequest = new StringBuilder();
@@ -99,7 +104,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
         public static string GetPayloadHash(HttpRequestMessage request)
         {
-            if (request.Content is ByteArrayContent)
+            if (request.Content is ByteArrayContent || request.Content is MultipartContent)
             {
                 var bytes = request.Content.ReadAsByteArrayAsync().Result;
                 return Utils.ToHex(Utils.Hash(bytes));
@@ -109,7 +114,12 @@ namespace AspNetCore.Yandex.ObjectStorage
             return Utils.ToHex(Utils.Hash(payload));
         }
 
-        // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
+        /// <summary>
+        /// http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
+        /// </summary>
+        /// <param name="requestDate"></param>
+        /// <param name="canonicalRequest"></param>
+        /// <returns></returns>
         private string GetStringToSign(DateTime requestDate, string canonicalRequest)
         {
             var dateStamp = requestDate.ToString(Iso8601DateFormat, CultureInfo.InvariantCulture);
@@ -123,7 +133,12 @@ namespace AspNetCore.Yandex.ObjectStorage
             return stringToSign.ToString();
         }
 
-        // http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html
+        /// <summary>
+        /// http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html
+        /// </summary>
+        /// <param name="requestDate"></param>
+        /// <param name="stringToSign"></param>
+        /// <returns></returns>
         private string GetSignature(DateTime requestDate, string stringToSign)
         {
             var kSigning = GetSigningKey(requestDate);

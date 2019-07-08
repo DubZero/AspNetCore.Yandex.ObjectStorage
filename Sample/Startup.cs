@@ -26,7 +26,6 @@ namespace Sample
                 options.SecretKey = "sKey";
                 options.Endpoint = "endpoint";
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +35,6 @@ namespace Sample
             {
                 app.UseDeveloperExceptionPage();
             }
-
             
             // Test injection
             service.TryGetAsync().GetAwaiter().GetResult();
