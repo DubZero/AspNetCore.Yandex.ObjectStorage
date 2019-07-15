@@ -48,7 +48,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
             return requestMessage;
         }
-        
+
         private HttpRequestMessage PrepareGetRequest(string filename)
         {
             AwsV4SignatureCalculator calculator = new AwsV4SignatureCalculator(_secretKey);
@@ -108,6 +108,11 @@ namespace AspNetCore.Yandex.ObjectStorage
             return requestMessage;
         }
 
+        
+        /// <summary>
+        /// Test connection to storage
+        /// </summary>
+        /// <returns>Retruns true if all credentials correct</returns>
         public async Task<bool> TryGetAsync()
         {
             var requestMessage = PrepareGetRequest();
@@ -125,7 +130,41 @@ namespace AspNetCore.Yandex.ObjectStorage
                 return false;
             }
         }
+        
+        public async Task<byte[]> GetAsByteArrayAsync(string filename)
+        {
+            var requestMessage = PrepareGetRequest(filename);
+            
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.SendAsync(requestMessage);
 
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+
+                throw new Exception(await response.Content.ReadAsStringAsync());
+            }
+        }
+        
+        public async Task<Stream> GetAsStreamAsync(string filename)
+        {
+            var requestMessage = PrepareGetRequest(filename);
+            
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStreamAsync();
+                }
+
+                throw new Exception(await response.Content.ReadAsStringAsync());
+            }
+        }
+        
         public async Task<string> PutObjectAsync(MemoryStream stream, string filename)
         {
             var requestMessage = PreparePutRequest(stream, filename);

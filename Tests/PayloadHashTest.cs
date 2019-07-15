@@ -9,8 +9,6 @@ namespace Tests
     [TestClass]
     public class PayloadHashTest
     {
-        
-        
         [TestMethod]
         public void TestHash()
         {
@@ -25,8 +23,6 @@ namespace Tests
                 ms.Position = 0;
 
                 var content = new ByteArrayContent(ms.ToArray());
-                new MultipartContent();
-                
                 requestMessage.Content = content;
             }
             
