@@ -21,10 +21,10 @@ services.AddYandexObjectStorage(options =>
 Options is a `YandexStorageOptions` class.
 It provides access to setup next properties:
 ```
-        string Protocol - by default -> "https"
-        string BucketName
-        string Location - by default -> "us-east-1"
-        string Endpoint - by default -> "storage.yandexcloud.net"
-        string AccessKey
-        string SecretKey
+string Protocol - by default -> "https"
+string BucketName
+string Location - by default -> "us-east-1"
+string Endpoint - by default -> "storage.yandexcloud.net"
+string AccessKey
+string SecretKey
 ```
