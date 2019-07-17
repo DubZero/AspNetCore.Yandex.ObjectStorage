@@ -89,7 +89,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
             return requestMessage;
         }
-        
+
         private HttpRequestMessage PrepareDeleteRequest(string storageFileName)
         {
             AwsV4SignatureCalculator calculator = new AwsV4SignatureCalculator(_secretKey);
