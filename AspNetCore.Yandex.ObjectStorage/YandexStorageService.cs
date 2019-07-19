@@ -130,10 +130,15 @@ namespace AspNetCore.Yandex.ObjectStorage
                 return false;
             }
         }
+
+        
+        
         
         public async Task<byte[]> GetAsByteArrayAsync(string filename)
         {
-            var requestMessage = PrepareGetRequest(filename);
+            var formatedPath = FormatePath(filename);
+            
+            var requestMessage = PrepareGetRequest(formatedPath);
             
             using (HttpClient client = new HttpClient())
             {
@@ -146,11 +151,21 @@ namespace AspNetCore.Yandex.ObjectStorage
 
                 throw new Exception(await response.Content.ReadAsStringAsync());
             }
+
+
         }
         
+        /// <summary>
+        /// Return object as Stream
+        /// </summary>
+        /// <param name="filename">full URL or filename if it is in root folder</param>
+        /// <returns>Stream</returns>
+        /// <exception cref="Exception"></exception>
         public async Task<Stream> GetAsStreamAsync(string filename)
         {
-            var requestMessage = PrepareGetRequest(filename);
+            var formatedPath = FormatePath(filename);
+            
+            var requestMessage = PrepareGetRequest(formatedPath);
             
             using (HttpClient client = new HttpClient())
             {
@@ -167,7 +182,9 @@ namespace AspNetCore.Yandex.ObjectStorage
         
         public async Task<string> PutObjectAsync(MemoryStream stream, string filename)
         {
-            var requestMessage = PreparePutRequest(stream, filename);
+            var formatedPath = FormatePath(filename);
+            
+            var requestMessage = PreparePutRequest(stream, formatedPath);
             
             using (HttpClient client = new HttpClient())
             {
@@ -176,7 +193,7 @@ namespace AspNetCore.Yandex.ObjectStorage
                 var result = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    var fileResult = GetObjectUri(filename);
+                    var fileResult = GetObjectUri(formatedPath);
                     return fileResult;
                 }
 
@@ -184,9 +201,16 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
 
+        private string FormatePath(string path)
+        {
+            return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
+        }
+
         public async Task<bool> DeleteObjectAsync(string filename)
         {
-            var requestMessage = PrepareDeleteRequest(filename);
+            var formatedPath = FormatePath(filename);
+            
+            var requestMessage = PrepareDeleteRequest(formatedPath);
 
             using (HttpClient client = new HttpClient())
             {
