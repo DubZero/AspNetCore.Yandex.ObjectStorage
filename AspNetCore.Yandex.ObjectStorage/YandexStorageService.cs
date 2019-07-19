@@ -67,13 +67,25 @@ namespace AspNetCore.Yandex.ObjectStorage
             return requestMessage;
         }
         
-        private HttpRequestMessage PreparePutRequest(MemoryStream stream, string filename)
+        private HttpRequestMessage PreparePutRequest(Stream stream, string filename)
         {
             AwsV4SignatureCalculator calculator = new AwsV4SignatureCalculator(_secretKey);
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
             DateTime value = DateTime.UtcNow;
-            
-            var content = new ByteArrayContent(stream.ToArray());
+            ByteArrayContent content;
+            if (stream is MemoryStream ms)
+            {
+                content = new ByteArrayContent(ms.ToArray());
+            }
+            else
+            {
+                using(MemoryStream memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    content = new ByteArrayContent(memoryStream.ToArray());
+                }
+            }
+
             requestMessage.Content = content;
             stream.Dispose();
             
@@ -180,7 +192,7 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
         
-        public async Task<string> PutObjectAsync(MemoryStream stream, string filename)
+        public async Task<string> PutObjectAsync(Stream stream, string filename)
         {
             var formatedPath = FormatePath(filename);
             
@@ -200,6 +212,7 @@ namespace AspNetCore.Yandex.ObjectStorage
                 return result;
             }
         }
+       
 
         private string FormatePath(string path)
         {
