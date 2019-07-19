@@ -102,6 +102,28 @@ namespace AspNetCore.Yandex.ObjectStorage
             return requestMessage;
         }
 
+        private HttpRequestMessage PreparePutRequest(byte[] byteArr, string filename)
+        {
+            AwsV4SignatureCalculator calculator = new AwsV4SignatureCalculator(_secretKey);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            DateTime value = DateTime.UtcNow;
+            ByteArrayContent content = new ByteArrayContent(byteArr);
+
+            requestMessage.Content = content;
+
+            requestMessage.Headers.Add("Host", _endpoint);
+            requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
+            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+
+            string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
+            string signature = calculator.CalculateSignature(requestMessage, headers, value);
+            string authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+
+            return requestMessage;
+        }
+
         private HttpRequestMessage PrepareDeleteRequest(string storageFileName)
         {
             AwsV4SignatureCalculator calculator = new AwsV4SignatureCalculator(_secretKey);
@@ -212,7 +234,28 @@ namespace AspNetCore.Yandex.ObjectStorage
                 return result;
             }
         }
-       
+
+        public async Task<string> PutObjectAsync(byte[] byteArr, string filename)
+        {
+            var formatedPath = FormatePath(filename);
+
+            var requestMessage = PreparePutRequest(byteArr, formatedPath);
+
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.SendAsync(requestMessage);
+
+                var result = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var fileResult = GetObjectUri(formatedPath);
+                    return fileResult;
+                }
+
+                return result;
+            }
+        }
+
 
         private string FormatePath(string path)
         {

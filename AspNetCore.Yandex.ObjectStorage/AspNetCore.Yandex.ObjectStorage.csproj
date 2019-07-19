@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.9</Version>
+    <Version>0.0.10</Version>
     <Authors>Shumkin Alexandr</Authors>
     <Description>S3 API realisation for Yandex Object Storage</Description>
     <PackageProjectUrl>https://github.com/DubZero/AspNetCore.Yandex.ObjectStorage</PackageProjectUrl>
