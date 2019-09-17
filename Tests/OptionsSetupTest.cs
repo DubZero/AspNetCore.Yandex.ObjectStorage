@@ -51,6 +51,7 @@ namespace Tests
             Assert.AreEqual("http", yandexOptions.Protocol, "Protocol not configured");
             Assert.AreEqual("your-access-key", yandexOptions.AccessKey, "Access Key not configured");
             Assert.AreEqual("your-secret-key", yandexOptions.SecretKey, "Secret Key not configured");
+            Assert.AreEqual(YandexStorageDefaults.EndPoint, yandexOptions.Endpoint, "Endpoint Key not configured");
         }
     }
 }
