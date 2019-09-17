@@ -29,6 +29,17 @@ namespace AspNetCore.Yandex.ObjectStorage
             _hostName = yandexStorageOptions.HostName;
         }
         
+        public YandexStorageService(YandexStorageOptions options)
+        {
+            _protocol = options.Protocol;
+            _bucketName = options.BucketName;
+            _location = options.Location;
+            _endpoint = options.Endpoint;
+            _accessKey = options.AccessKey;
+            _secretKey = options.SecretKey;
+            _hostName = options.HostName;
+        }
+        
         private HttpRequestMessage PrepareGetRequest()
         {
            
