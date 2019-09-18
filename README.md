@@ -23,9 +23,9 @@ services.AddYandexObjectStorage(options =>
 #### OR
 
 Can load options from `IConfiguratiuonRoot` as: `services.AddYandexObjectStorage(Configuration);`
-by default, it reads a section with the name `YandexStorage`, for example, the section in `appsettings.json` below:
+by default, it reads a section with the name `YandexObjectStorage`, for example, the section in `appsettings.json` below:
 ```
-"YandexStorage" : {
+"YandexObjectStorage" : {
     "Bucket" : "your-bucket",
     "AccessKey" : "your-access-key",
     "SecretKey" : "your-secret-key",
