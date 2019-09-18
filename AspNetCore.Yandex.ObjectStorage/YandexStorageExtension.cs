@@ -15,12 +15,12 @@ namespace AspNetCore.Yandex.ObjectStorage
             services.AddTransient<YandexStorageService>();
         }
         
-        public static void AddYandexObjectStorage(this IServiceCollection services, IConfiguration configuration)
+        public static void AddYandexObjectStorage(this IServiceCollection services, IConfiguration configuration, string sectionName = YandexConfigurationDefaults.DefaultSectionName)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
             
-            services.LoadYandexStorageOptions(configuration).AddTransient<YandexStorageService>();
+            services.LoadYandexStorageOptions(configuration, sectionName).AddTransient<YandexStorageService>();
         }
 
         public static YandexStorageService CreateYandexObjectService(this YandexStorageOptions options)

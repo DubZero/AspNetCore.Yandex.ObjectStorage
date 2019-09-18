@@ -6,16 +6,17 @@ namespace AspNetCore.Yandex.ObjectStorage
 {
     public static class YandexConfigurationReaderExtension
     {
-        public static YandexStorageOptions GetYandexStorageOptions(this IConfiguration configuration)
+
+        public static YandexStorageOptions GetYandexStorageOptions(this IConfiguration configuration, string sectionName)
         {
-            var section = configuration.GetSection(YandexConfigurationDefaults.DefaultSectionName);
-            
+            var section = configuration.GetSection(sectionName);
+
             return new YandexStorageOptions(section);
         }
-        
-        public static IServiceCollection LoadYandexStorageOptions(this IServiceCollection services, IConfiguration configuration)
+
+        public static IServiceCollection LoadYandexStorageOptions(this IServiceCollection services, IConfiguration configuration, string sectionName)
         {
-            var readedOptions = configuration.GetYandexStorageOptions();
+            var readedOptions = configuration.GetYandexStorageOptions(sectionName);
             
             services.Configure<YandexStorageOptions>(options =>
             {

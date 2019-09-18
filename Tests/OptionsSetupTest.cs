@@ -22,7 +22,7 @@ namespace Tests
         {
             var config = GetConfiguration();
 
-            var options = config.GetYandexStorageOptions();
+            var options = config.GetYandexStorageOptions(YandexConfigurationDefaults.DefaultSectionName);
 
             Assert.IsTrue(options.BucketName == "your-bucket");
             Assert.IsTrue(options.Protocol == "http");
