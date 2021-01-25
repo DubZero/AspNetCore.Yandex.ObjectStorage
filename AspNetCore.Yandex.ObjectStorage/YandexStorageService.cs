@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AspNetCore.Yandex.ObjectStorage.Multipart;
 using Microsoft.Extensions.Options;
 
 namespace AspNetCore.Yandex.ObjectStorage
@@ -175,9 +176,6 @@ namespace AspNetCore.Yandex.ObjectStorage
                 return false;
             }
         }
-
-        
-        
         
         public async Task<byte[]> GetAsByteArrayAsync(string filename)
         {
@@ -267,7 +265,62 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
 
+        /// <summary>
+        /// Multipart upload for files more than 100Mb
+        /// </summary>
+        /// <param name="stream">Stream with file</param>
+        /// <param name="filename">Filename</param>
+        /// <param name="partSize">Size of 1 part in Kb, must be more than 5120 Kb</param>
+        /// <returns></returns>
+        public async Task<string> MutipartAsync(Stream stream, string filename, int partSize = 6000)
+        {
+            var startResult = await StartUpload(filename);
+            
+            throw new NotImplementedException();
+        }
+        
+        /// <summary>
+        /// Multipart upload for files more than 100Mb
+        /// </summary>
+        /// <param name="byteArr">File in byte array</param>
+        /// <param name="filename">Filename</param>
+        /// <param name="partSize">Size of 1 part in Kb, must be more than 5120 Kb</param>
+        /// <returns></returns>
+        public async Task<string> MutipartAsync(byte[] byteArr, string filename, int partSize = 6000)
+        {
+            var startResult = await StartUpload(filename);
+            
+            throw new NotImplementedException();
+        }
 
+        private async Task<bool> FileToParts(Stream stream, InitiateMultipartUploadResult startResponse, int partSize)
+        {
+
+            byte[] part = new byte[partSize];
+            int offset = 0;
+            int partNumber = 0;
+            while (stream.Position != stream.Length)
+            {
+                var position = await stream.ReadAsync(part, offset, partSize);
+                offset += partSize;
+                partNumber += 1;
+                await UploadPart(part, partNumber, startResponse.UploadId);
+                part = new byte[partSize];
+            }
+
+            return true;
+        }
+
+        private async Task<InitiateMultipartUploadResult> StartUpload(string filename)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private async Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
+        {
+            throw new NotImplementedException();
+        }
+        
         private string FormatePath(string path)
         {
             return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
