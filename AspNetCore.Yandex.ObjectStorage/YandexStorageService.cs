@@ -159,27 +159,21 @@ namespace AspNetCore.Yandex.ObjectStorage
         /// Test connection to storage
         /// </summary>
         /// <returns>Retruns true if all credentials correct</returns>
-        public async Task<bool> TryGetAsync()
+        public async Task<S3GetResponse> TryGetAsync()
         {
             var requestMessage = PrepareGetRequest();
             
             using (HttpClient client = new HttpClient())
             {
                 var response = await client.SendAsync(requestMessage);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return true;
-                }
-
-                return false;
+                
+                return new S3GetResponse(response);
             }
         }
         
         public async Task<byte[]> GetAsByteArrayAsync(string filename)
         {
-            var formattedPath = FormatePath(filename);
+            var formattedPath = FormatPath(filename);
             
             var requestMessage = PrepareGetRequest(formattedPath);
             
@@ -206,7 +200,7 @@ namespace AspNetCore.Yandex.ObjectStorage
         /// <exception cref="Exception"></exception>
         public async Task<Stream> GetAsStreamAsync(string filename)
         {
-            var formattedPath = FormatePath(filename);
+            var formattedPath = FormatPath(filename);
             
             var requestMessage = PrepareGetRequest(formattedPath);
             
@@ -226,7 +220,7 @@ namespace AspNetCore.Yandex.ObjectStorage
         
         public async Task<S3Response> PutObjectAsync(Stream stream, string filename)
         {
-            var formattedPath = FormatePath(filename);
+            var formattedPath = FormatPath(filename);
             
             var requestMessage = PreparePutRequest(stream, formattedPath);
             
@@ -240,7 +234,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
         public async Task<S3Response> PutObjectAsync(byte[] byteArr, string filename)
         {
-            var formattedPath = FormatePath(filename);
+            var formattedPath = FormatPath(filename);
 
             var requestMessage = PreparePutRequest(byteArr, formattedPath);
 
@@ -252,70 +246,14 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
 
-        /// <summary>
-        /// Multipart upload for files more than 100Mb
-        /// </summary>
-        /// <param name="stream">Stream with file</param>
-        /// <param name="filename">Filename</param>
-        /// <param name="partSize">Size of 1 part in Kb, must be more than 5120 Kb</param>
-        /// <returns></returns>
-        public async Task<string> MutipartAsync(Stream stream, string filename, int partSize = 6000)
-        {
-            var startResult = await StartUpload(filename);
-            
-            throw new NotImplementedException();
-        }
-        
-        /// <summary>
-        /// Multipart upload for files more than 100Mb
-        /// </summary>
-        /// <param name="byteArr">File in byte array</param>
-        /// <param name="filename">Filename</param>
-        /// <param name="partSize">Size of 1 part in Kb, must be more than 5120 Kb</param>
-        /// <returns></returns>
-        public async Task<string> MutipartAsync(byte[] byteArr, string filename, int partSize = 6000)
-        {
-            var startResult = await StartUpload(filename);
-            
-            throw new NotImplementedException();
-        }
-
-        private async Task<bool> FileToParts(Stream stream, InitiateMultipartUploadResult startResponse, int partSize)
-        {
-
-            byte[] part = new byte[partSize];
-            int offset = 0;
-            int partNumber = 0;
-            while (stream.Position != stream.Length)
-            {
-                var position = await stream.ReadAsync(part, offset, partSize);
-                offset += partSize;
-                partNumber += 1;
-                await UploadPart(part, partNumber, startResponse.UploadId);
-                part = new byte[partSize];
-            }
-
-            return true;
-        }
-
-        private async Task<InitiateMultipartUploadResult> StartUpload(string filename)
-        {
-            throw new NotImplementedException();
-        }
-        
-        private async Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
-        
-        private string FormatePath(string path)
+        private string FormatPath(string path)
         {
             return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
         }
 
-        public async Task<bool> DeleteObjectAsync(string filename)
+        public async Task<S3DeleteResponse> DeleteObjectAsync(string filename)
         {
-            var formattedPath = FormatePath(filename);
+            var formattedPath = FormatPath(filename);
             
             var requestMessage = PrepareDeleteRequest(formattedPath);
 
@@ -323,15 +261,7 @@ namespace AspNetCore.Yandex.ObjectStorage
             {
                 var response = await client.SendAsync(requestMessage);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return true;
-                }
-                
-                var error = await response.Content.ReadAsStringAsync();
-
-                return false;
+                return new S3DeleteResponse(response);
             }
         }
         
