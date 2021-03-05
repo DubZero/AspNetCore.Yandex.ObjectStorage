@@ -56,7 +56,7 @@ namespace AspNetCore.Yandex.ObjectStorage
             canonicalRequest.AppendFormat("{0}\n", request.RequestUri.AbsolutePath);
             canonicalRequest.AppendFormat("{0}\n", GetCanonicalQueryParameters(QueryHelpers.ParseQuery(request.RequestUri.Query)));
             canonicalRequest.AppendFormat("{0}\n", GetCanonicalHeaders(request, signedHeaders));
-            canonicalRequest.AppendFormat("{0}\n", String.Join(";", signedHeaders));
+            canonicalRequest.AppendFormat("{0}\n", string.Join(";", signedHeaders));
             canonicalRequest.Append(GetPayloadHash(request));
             return canonicalRequest.ToString();
         }
@@ -80,12 +80,12 @@ namespace AspNetCore.Yandex.ObjectStorage
         private static string GetCanonicalHeaders(HttpRequestMessage request, IEnumerable<string> signedHeaders)
         {
             var headers = request.Headers.ToDictionary(x => x.Key.Trim().ToLowerInvariant(),
-                                                       x => String.Join(" ", x.Value).Trim());
+                                                       x => string.Join(" ", x.Value).Trim());
 
             if (request.Content != null)
             {
                 var contentHeaders = request.Content.Headers.ToDictionary(x => x.Key.Trim().ToLowerInvariant(),
-                                                                          x => String.Join(" ", x.Value).Trim());
+                                                                          x => string.Join(" ", x.Value).Trim());
                 foreach (var contentHeader in contentHeaders)
                 {
                     headers.Add(contentHeader.Key, contentHeader.Value);

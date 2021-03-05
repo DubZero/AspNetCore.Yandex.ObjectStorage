@@ -175,15 +175,12 @@ namespace AspNetCore.Yandex.ObjectStorage
                 return false;
             }
         }
-
-        
-        
         
         public async Task<byte[]> GetAsByteArrayAsync(string filename)
         {
-            var formatedPath = FormatePath(filename);
+            var formattedPath = FormatePath(filename);
             
-            var requestMessage = PrepareGetRequest(formatedPath);
+            var requestMessage = PrepareGetRequest(formattedPath);
             
             using (HttpClient client = new HttpClient())
             {
@@ -208,9 +205,9 @@ namespace AspNetCore.Yandex.ObjectStorage
         /// <exception cref="Exception"></exception>
         public async Task<Stream> GetAsStreamAsync(string filename)
         {
-            var formatedPath = FormatePath(filename);
+            var formattedPath = FormatePath(filename);
             
-            var requestMessage = PrepareGetRequest(formatedPath);
+            var requestMessage = PrepareGetRequest(formattedPath);
             
             using (HttpClient client = new HttpClient())
             {
@@ -225,45 +222,32 @@ namespace AspNetCore.Yandex.ObjectStorage
             }
         }
         
-        public async Task<string> PutObjectAsync(Stream stream, string filename)
+        
+        public async Task<S3Response> PutObjectAsync(Stream stream, string filename)
         {
-            var formatedPath = FormatePath(filename);
+            var formattedPath = FormatePath(filename);
             
-            var requestMessage = PreparePutRequest(stream, formatedPath);
+            var requestMessage = PreparePutRequest(stream, formattedPath);
             
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 var response = await client.SendAsync(requestMessage);
                 
-                var result = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    var fileResult = GetObjectUri(formatedPath);
-                    return fileResult;
-                }
-
-                return result;
+                return new S3PutResponse(response, GetObjectUri(formattedPath));
             }
         }
 
-        public async Task<string> PutObjectAsync(byte[] byteArr, string filename)
+        public async Task<S3Response> PutObjectAsync(byte[] byteArr, string filename)
         {
-            var formatedPath = FormatePath(filename);
+            var formattedPath = FormatePath(filename);
 
-            var requestMessage = PreparePutRequest(byteArr, formatedPath);
+            var requestMessage = PreparePutRequest(byteArr, formattedPath);
 
             using (HttpClient client = new HttpClient())
             {
                 var response = await client.SendAsync(requestMessage);
 
-                var result = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    var fileResult = GetObjectUri(formatedPath);
-                    return fileResult;
-                }
-
-                return result;
+                return new S3PutResponse(response, GetObjectUri(formattedPath));
             }
         }
 
@@ -275,9 +259,9 @@ namespace AspNetCore.Yandex.ObjectStorage
 
         public async Task<bool> DeleteObjectAsync(string filename)
         {
-            var formatedPath = FormatePath(filename);
+            var formattedPath = FormatePath(filename);
             
-            var requestMessage = PrepareDeleteRequest(formatedPath);
+            var requestMessage = PrepareDeleteRequest(formattedPath);
 
             using (HttpClient client = new HttpClient())
             {
