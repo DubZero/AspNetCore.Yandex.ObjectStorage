@@ -40,4 +40,8 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Builders\BucketRequestBuilders" />
+  </ItemGroup>
 </Project>
