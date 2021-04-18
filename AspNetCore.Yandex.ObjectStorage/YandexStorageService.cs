@@ -2,17 +2,18 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AspNetCore.Yandex.ObjectStorage.Builders;
+using AspNetCore.Yandex.ObjectStorage.Builders.BucketRequestBuilders;
 using AspNetCore.Yandex.ObjectStorage.Builders.ObjectRequestBuilders;
+using AspNetCore.Yandex.ObjectStorage.Enums;
 using AspNetCore.Yandex.ObjectStorage.Multipart;
-
+using AspNetCore.Yandex.ObjectStorage.RequestOptionsModels;
 using Microsoft.Extensions.Options;
 
 namespace AspNetCore.Yandex.ObjectStorage
 {
 	public class YandexStorageService
 	{
-		private YandexStorageOptions _options;
+		private readonly YandexStorageOptions _options;
 
 		public YandexStorageService(IOptions<YandexStorageOptions> options)
 		{
@@ -185,37 +186,37 @@ namespace AspNetCore.Yandex.ObjectStorage
 			return true;
 		}
 
-		private async Task<InitiateMultipartUploadResult> StartUpload(string filename)
+		private Task<InitiateMultipartUploadResult> StartUpload(string filename)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> CopyPart(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> CopyPart(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> ListParts(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> ListParts(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> AbortUpload(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> AbortUpload(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> CompleteUpload(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> CompleteUpload(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> ListUploads(byte[] filePart, int partNumber, string uploadId)
+		private  Task<string> ListUploads(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
@@ -224,9 +225,20 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		#region Bucket methods
 
-		public Task<S3PutResponse> CreateBucket()
+		public async Task<S3PutResponse> CreateBucket(string bucketName)
 		{
-			throw new NotImplementedException();
+			var builder = new BucketPutRequestBuilder(_options);
+			var createModel = new BucketCreateOptions()
+			{
+				BucketName = bucketName,
+				ACLType = ACLType.Private
+			};
+			var requestMessage = builder.Build(createModel).GetResult();
+
+			using var client = new HttpClient();
+			var response = await client.SendAsync(requestMessage);
+
+			return new S3PutResponse(response, GetBucketUri(bucketName));
 		}
 		
 		public Task<S3GetResponse> GetBucketMeta()
@@ -256,6 +268,11 @@ namespace AspNetCore.Yandex.ObjectStorage
 		private string GetObjectUri(string filename)
 		{
 			return $"{_options.HostName}/{filename}";
+		}
+		
+		private string GetBucketUri(string bucket)
+		{
+			return $"{_options.Protocol}/{_options.Endpoint}/{bucket}";
 		}
 
 		#endregion PRIVATE

@@ -111,7 +111,9 @@ namespace AspNetCore.Yandex.ObjectStorage
 				return Utils.ToHex(Utils.Hash(bytes));
 			}
 
-			var payload = request.Content != null ? request.Content.ReadAsStringAsync().Result : "";
+			var payload = request.Content != null 
+				? request.Content.ReadAsStringAsync().Result 
+				: "";
 			return Utils.ToHex(Utils.Hash(payload));
 		}
 

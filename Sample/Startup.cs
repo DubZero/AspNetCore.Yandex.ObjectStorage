@@ -1,4 +1,5 @@
-﻿using AspNetCore.Yandex.ObjectStorage;
+﻿using System;
+using AspNetCore.Yandex.ObjectStorage;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,11 +37,13 @@ namespace Sample
 			}
 
 			// Test injection
-			service.TryGetAsync().GetAwaiter().GetResult();
-
+			var result = service.GetAsByteArrayAsync("teststorage.txt").GetAwaiter().GetResult();
+			var rnd = new Random();
+			
+			var responce = service.CreateBucket($"testbucket{rnd.Next(1,500)}").GetAwaiter().GetResult();
 			app.Run(async (context) =>
 			{
-				await context.Response.WriteAsync("Hello World!");
+				await context.Response.WriteAsync(responce.Error);
 			});
 		}
 	}

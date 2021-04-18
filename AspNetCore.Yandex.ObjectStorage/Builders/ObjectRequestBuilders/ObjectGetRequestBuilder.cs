@@ -15,19 +15,13 @@ namespace AspNetCore.Yandex.ObjectStorage.Builders.ObjectRequestBuilders
         
         internal ObjectGetRequestBuilder Build()
         {
-            var calculator = new AwsV4SignatureCalculator(_options.SecretKey);
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_options.Protocol}://{_options.Endpoint}/{_options.BucketName}"));
-            var value = DateTime.UtcNow;
+            var dateAmz = DateTime.UtcNow;
 
-            requestMessage.Headers.Add("Host", _options.Endpoint);
-            requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            requestMessage.AddBothHeaders(_options, dateAmz);
 
             string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-            var signature = calculator.CalculateSignature(requestMessage, headers, value);
-            var authHeader = $"AWS4-HMAC-SHA256 Credential={_options.AccessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
-
-            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+            requestMessage.AddAuthHeader(_options, dateAmz, headers);
             _request = requestMessage;
 
             return this;
@@ -35,18 +29,13 @@ namespace AspNetCore.Yandex.ObjectStorage.Builders.ObjectRequestBuilders
         
         internal ObjectGetRequestBuilder Build(string filename)
         {
-            var calculator = new AwsV4SignatureCalculator(_options.SecretKey);
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_options.Protocol}://{_options.Endpoint}/{_options.BucketName}/{filename}"));
-            var value = DateTime.UtcNow;
-            requestMessage.Headers.Add("Host", _options.Endpoint);
-            requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            var dateAmz = DateTime.UtcNow;
 
+            requestMessage.AddBothHeaders(_options, dateAmz);
+            
             string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-            var signature = calculator.CalculateSignature(requestMessage, headers, value);
-            var authHeader = $"AWS4-HMAC-SHA256 Credential={_options.AccessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
-
-            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+            requestMessage.AddAuthHeader(_options, dateAmz, headers);
             _request = requestMessage;
 
             return this;
