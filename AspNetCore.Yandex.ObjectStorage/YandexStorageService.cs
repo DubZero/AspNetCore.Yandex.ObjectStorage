@@ -107,6 +107,17 @@ namespace AspNetCore.Yandex.ObjectStorage
 			return new S3PutResponse(response, GetObjectUri(formattedPath));
 		}
 
+		public async Task<S3PutResponse> PutObjectAsync(byte[] byteArr, string filename)
+		{
+			var formattedPath = FormatPath(filename);
+
+			var requestMessage = PreparePutRequest(byteArr, formattedPath);
+
+			var response = await _client.SendAsync(requestMessage);
+
+			return new S3PutResponse(response, GetObjectUri(formattedPath));
+		}
+
 		public async Task<S3DeleteResponse> DeleteObjectAsync(string filename)
 		{
 			var formattedPath = FormatPath(filename);
@@ -259,15 +270,15 @@ namespace AspNetCore.Yandex.ObjectStorage
 		private async Task<string> MutipartAsync(byte[] byteArr, string filename, int partSize = 6000)
 		{
 			// https://cloud.yandex.ru/docs/storage/s3/api-ref/multipart
-			// Общий алгоритм
+			// РћР±С‰РёР№ Р°Р»РіРѕСЂРёС‚Рј
 
-			// Ининциализируем начало загрузки - отправляем метаданные - получаем индефикатор загрузки
+			// РРЅРёРЅС†РёР°Р»РёР·РёСЂСѓРµРј РЅР°С‡Р°Р»Рѕ Р·Р°РіСЂСѓР·РєРё - РѕС‚РїСЂР°РІР»СЏРµРј РјРµС‚Р°РґР°РЅРЅС‹Рµ - РїРѕР»СѓС‡Р°РµРј РёРЅРґРµС„РёРєР°С‚РѕСЂ Р·Р°РіСЂСѓР·РєРё
 
-			// Разбиваем файл на части и указываем номера частей, а также присваеваем айди загрузки
+			// Р Р°Р·Р±РёРІР°РµРј С„Р°Р№Р» РЅР° С‡Р°СЃС‚Рё Рё СѓРєР°Р·С‹РІР°РµРј РЅРѕРјРµСЂР° С‡Р°СЃС‚РµР№, Р° С‚Р°РєР¶Рµ РїСЂРёСЃРІР°РµРІР°РµРј Р°Р№РґРё Р·Р°РіСЂСѓР·РєРё
 
-			// Загружаем все части (по 1ой) асинхронно
+			// Р—Р°РіСЂСѓР¶Р°РµРј РІСЃРµ С‡Р°СЃС‚Рё (РїРѕ 1РѕР№) Р°СЃРёРЅС…СЂРѕРЅРЅРѕ
 
-			// Отправляем запрос на завершение загрузки
+			// РћС‚РїСЂР°РІР»СЏРµРј Р·Р°РїСЂРѕСЃ РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ Р·Р°РіСЂСѓР·РєРё
 
 			var startResult = await StartUpload(filename);
 
