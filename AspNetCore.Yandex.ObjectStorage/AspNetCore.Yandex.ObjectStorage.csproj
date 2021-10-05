@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.7.2</Version>
     <Authors>Shumkin Alexandr</Authors>
@@ -9,7 +10,7 @@
     <RepositoryUrl>https://github.com/DubZero/AspNetCore.Yandex.ObjectStorage</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>S3, Yandex, Object Storage</PackageTags>
-    <PackageReleaseNotes>alpha</PackageReleaseNotes>
+    <PackageReleaseNotes>Using static HttpClient</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <SignAssembly>false</SignAssembly>
     <PackageIconUrl>https://yastatic.net/q/cloud-www/build/ru/assets/img/storage.15691e8c.png</PackageIconUrl>
@@ -27,9 +28,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.12" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.12" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
