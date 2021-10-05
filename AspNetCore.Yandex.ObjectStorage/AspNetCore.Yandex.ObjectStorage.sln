@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "..\Tests\Tests.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "..\Sample\Sample.csproj", "{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B3BB2E6F-5DE2-4E50-A195-D62E26463C86}"
+ProjectSection(SolutionItems) = preProject
+	..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
