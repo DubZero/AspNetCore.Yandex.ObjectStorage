@@ -53,7 +53,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 			var requestMessage = PrepareGetRequest();
 
 			using var client = new HttpClient();
-			var response = await client.SendAsync(requestMessage);
+			var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
 			return new S3GetResponse(response);
 		}
