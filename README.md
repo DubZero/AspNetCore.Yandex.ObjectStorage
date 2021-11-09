@@ -4,9 +4,6 @@
 
 [Nuget Package - AspNetCore.Yandex.ObjectStorage](https://www.nuget.org/packages/AspNetCore.Yandex.ObjectStorage/)
 
-[![Build Status](https://travis-ci.com/DubZero/AspNetCore.Yandex.ObjectStorage.svg?branch=master)](https://travis-ci.com/DubZero/AspNetCore.Yandex.ObjectStorage)
-
-
 ### How to use
 
 To inject service user extension method `AddYandexObjectStorage` to `IServiceCollection`
