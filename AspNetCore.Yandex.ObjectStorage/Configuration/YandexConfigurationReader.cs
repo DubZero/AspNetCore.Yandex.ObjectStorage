@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore.Yandex.ObjectStorage
+namespace AspNetCore.Yandex.ObjectStorage.Configuration
 {
 	public static class YandexConfigurationReaderExtension
 	{

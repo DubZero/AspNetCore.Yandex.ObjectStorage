@@ -1,7 +1,7 @@
 using System;
 
 using AspNetCore.Yandex.ObjectStorage;
-
+using AspNetCore.Yandex.ObjectStorage.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
