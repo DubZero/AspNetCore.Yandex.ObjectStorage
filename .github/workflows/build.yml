@@ -1,3 +1,4 @@
+
 name: "Build"
 
 on:
@@ -8,7 +9,7 @@ env:
   PROJECT_PATH: 'AspNetCore.Yandex.ObjectStorage/AspNetCore.Yandex.ObjectStorage.csproj'
 
 jobs:
-  test-build:
+  build:
     name: 'Test build'
       runs-on: 'windows-latest'
       steps:
