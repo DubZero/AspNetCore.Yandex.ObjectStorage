@@ -179,12 +179,12 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			public static byte[] Hash(string value)
 			{
-				return new SHA256CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(value));
+				return SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(value));
 			}
 
 			public static byte[] Hash(byte[] value)
 			{
-				return new SHA256CryptoServiceProvider().ComputeHash(value);
+				return SHA256.Create().ComputeHash(value);
 			}
 
 			public static byte[] GetKeyedHash(string key, string value)
