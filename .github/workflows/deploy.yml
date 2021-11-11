@@ -5,6 +5,8 @@ on:
     tags:
     - 'v*'
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 env:
   PROJECT_PATH: 'AspNetCore.Yandex.ObjectStorage/AspNetCore.Yandex.ObjectStorage.csproj'
