@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace AspNetCore.Yandex.ObjectStorage
+namespace AspNetCore.Yandex.ObjectStorage.Configuration
 {
 	public class YandexStorageOptions
 	{

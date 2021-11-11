@@ -1,5 +1,6 @@
 using AspNetCore.Yandex.ObjectStorage;
-
+using AspNetCore.Yandex.ObjectStorage.Configuration;
+using AspNetCore.Yandex.ObjectStorage.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

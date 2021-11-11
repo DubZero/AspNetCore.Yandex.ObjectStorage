@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-
+using AspNetCore.Yandex.ObjectStorage.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 
@@ -44,6 +44,18 @@ namespace AspNetCore.Yandex.ObjectStorage
 			return GetSignature(requestDate, stringToSign);
 		}
 
+		public static string GetPayloadHash(HttpRequestMessage request)
+		{
+			if (request.Content is ByteArrayContent || request.Content is MultipartContent)
+			{
+				var bytes = request.Content.ReadAsByteArrayAsync().Result;
+				return Utils.ToHex(Utils.Hash(bytes));
+			}
+
+			var payload = request.Content != null ? request.Content.ReadAsStringAsync().Result : "";
+			return Utils.ToHex(Utils.Hash(payload));
+		}
+
 		/// <summary>
 		/// http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
 		/// </summary>
@@ -64,8 +76,8 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		private static string GetCanonicalQueryParameters(Dictionary<string, StringValues> queryParameters)
 		{
-			StringBuilder canonicalQueryParameters = new StringBuilder();
-			foreach (string key in queryParameters.Keys)
+			var canonicalQueryParameters = new StringBuilder();
+			foreach (var key in queryParameters.Keys)
 			{
 				canonicalQueryParameters.AppendFormat("{0}={1}&", Utils.UrlEncode(key),
 													  Utils.UrlEncode(queryParameters[key]));
@@ -95,24 +107,12 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			var sortedHeaders = new SortedDictionary<string, string>(headers);
 
-			StringBuilder canonicalHeaders = new StringBuilder();
+			var canonicalHeaders = new StringBuilder();
 			foreach (var header in sortedHeaders.Where(header => signedHeaders.Contains(header.Key)))
 			{
 				canonicalHeaders.AppendFormat("{0}:{1}\n", header.Key, header.Value);
 			}
 			return canonicalHeaders.ToString();
-		}
-
-		public static string GetPayloadHash(HttpRequestMessage request)
-		{
-			if (request.Content is ByteArrayContent || request.Content is MultipartContent)
-			{
-				var bytes = request.Content.ReadAsByteArrayAsync().Result;
-				return Utils.ToHex(Utils.Hash(bytes));
-			}
-
-			var payload = request.Content != null ? request.Content.ReadAsStringAsync().Result : "";
-			return Utils.ToHex(Utils.Hash(payload));
 		}
 
 		/// <summary>
@@ -162,7 +162,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			public static string UrlEncode(string data)
 			{
-				StringBuilder encoded = new StringBuilder();
+				var encoded = new StringBuilder();
 				foreach (char symbol in Encoding.UTF8.GetBytes(data))
 				{
 					if (ValidUrlCharacters.IndexOf(symbol) != -1)
@@ -179,12 +179,12 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			public static byte[] Hash(string value)
 			{
-				return new SHA256CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(value));
+				return SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(value));
 			}
 
 			public static byte[] Hash(byte[] value)
 			{
-				return new SHA256CryptoServiceProvider().ComputeHash(value);
+				return SHA256.Create().ComputeHash(value);
 			}
 
 			public static byte[] GetKeyedHash(string key, string value)
@@ -201,8 +201,8 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			public static string ToHex(byte[] data)
 			{
-				StringBuilder sb = new StringBuilder();
-				for (int i = 0; i < data.Length; i++)
+				var sb = new StringBuilder();
+				for (var i = 0; i < data.Length; i++)
 				{
 					sb.Append(data[i].ToString("x2", CultureInfo.InvariantCulture));
 				}

@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.Http;
 
 using AspNetCore.Yandex.ObjectStorage;
-
+using AspNetCore.Yandex.ObjectStorage.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests

@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using AspNetCore.Yandex.ObjectStorage.Configuration;
+using AspNetCore.Yandex.ObjectStorage.Helpers;
+using AspNetCore.Yandex.ObjectStorage.Models;
 using AspNetCore.Yandex.ObjectStorage.Multipart;
 
 using Microsoft.Extensions.Options;
@@ -52,8 +54,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 		{
 			var requestMessage = PrepareGetRequest();
 
-			using var client = new HttpClient();
-			var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+			var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
 			return new S3GetResponse(response);
 		}
@@ -65,7 +66,6 @@ namespace AspNetCore.Yandex.ObjectStorage
 			var requestMessage = PrepareGetRequest(formattedPath);
 
 			var response = await _client.SendAsync(requestMessage);
-
 			if (response.IsSuccessStatusCode)
 			{
 				return await response.Content.ReadAsByteArrayAsync();
@@ -87,7 +87,6 @@ namespace AspNetCore.Yandex.ObjectStorage
 			var requestMessage = PrepareGetRequest(formattedPath);
 
 			var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
-
 			if (response.IsSuccessStatusCode)
 			{
 				return await response.Content.ReadAsStreamAsync();
@@ -124,15 +123,9 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			var requestMessage = PrepareDeleteRequest(formattedPath);
 
-			using var client = new HttpClient();
-			var response = await client.SendAsync(requestMessage);
+			var response = await _client.SendAsync(requestMessage);
 
 			return new S3DeleteResponse(response);
-		}
-
-		private string FormatPath(string path)
-		{
-			return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
 		}
 
 		private HttpRequestMessage PrepareGetRequest()
@@ -147,7 +140,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
 			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
 			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
@@ -165,7 +158,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
 			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
 			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
@@ -198,7 +191,8 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
 			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+			var headersString = string.Join(";", headers);
+			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={headersString}, Signature={signature}";
 
 			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
@@ -220,7 +214,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
 			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
 			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
@@ -238,13 +232,14 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
 			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
 			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
 			return requestMessage;
 		}
 
+		#region Not implemented API
 
 		/// <summary>
 		/// Multipart upload for files more than 100Mb
@@ -302,44 +297,51 @@ namespace AspNetCore.Yandex.ObjectStorage
 			return true;
 		}
 
-		private async Task<InitiateMultipartUploadResult> StartUpload(string filename)
+		private Task<InitiateMultipartUploadResult> StartUpload(string filename)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> CopyPart(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> CopyPart(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> ListParts(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> ListParts(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> AbortUpload(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> AbortUpload(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> CompleteUpload(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> CompleteUpload(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
 
-		private async Task<string> ListUploads(byte[] filePart, int partNumber, string uploadId)
+		private Task<string> ListUploads(byte[] filePart, int partNumber, string uploadId)
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion Not Implemented API
 
 		private string GetObjectUri(string filename)
 		{
 			return $"{_hostName}/{filename}";
+		}
+
+		private string FormatPath(string path)
+		{
+			return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
 		}
 	}
 }

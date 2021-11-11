@@ -1,4 +1,4 @@
-namespace AspNetCore.Yandex.ObjectStorage
+namespace AspNetCore.Yandex.ObjectStorage.Configuration
 {
 	public static class YandexConfigurationDefaults
 	{

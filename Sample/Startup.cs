@@ -1,5 +1,5 @@
 ﻿using AspNetCore.Yandex.ObjectStorage;
-
+using AspNetCore.Yandex.ObjectStorage.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
