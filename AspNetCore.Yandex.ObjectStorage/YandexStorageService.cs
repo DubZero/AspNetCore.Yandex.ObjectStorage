@@ -50,6 +50,19 @@ namespace AspNetCore.Yandex.ObjectStorage
 		/// Test connection to storage
 		/// </summary>
 		/// <returns>Retruns true if all credentials correct</returns>
+		public async Task<S3GetResponse> TryGetAsync(string filename)
+		{
+			var requestMessage = PrepareGetRequest(filename);
+
+			var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+
+			return new S3GetResponse(response);
+		}
+
+		/// <summary>
+		/// Test connection to storage
+		/// </summary>
+		/// <returns>Retruns true if all credentials correct</returns>
 		public async Task<S3GetResponse> TryGetAsync()
 		{
 			var requestMessage = PrepareGetRequest();
@@ -58,6 +71,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 			return new S3GetResponse(response);
 		}
+
 
 		public async Task<byte[]> GetAsByteArrayAsync(string filename)
 		{
