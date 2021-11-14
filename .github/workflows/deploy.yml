@@ -10,6 +10,7 @@ on:
 
 env:
   PROJECT_PATH: 'AspNetCore.Yandex.ObjectStorage/AspNetCore.Yandex.ObjectStorage.csproj'
+  TEST_PROJECT_PATH: './AspNetCore.Yandex.ObjectStorage.sln'
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\bin\Release
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
 
@@ -31,6 +32,13 @@ jobs:
 
     - name: 'Build project'
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+
+    - name: 'Test project'
+      run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal
+      env:
+        BucketName: ${{ secrets.BUCKETNAME }}
+        AccessKey: ${{ secrets.ACCESSKEY }}
+        SecretKey: ${{ secrets.SECRET_KEY  }}
 
     - name: 'Pack project'
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
+using AspNetCore.Yandex.ObjectStorage.Helpers;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 
@@ -49,11 +50,11 @@ namespace AspNetCore.Yandex.ObjectStorage
 			if (request.Content is ByteArrayContent || request.Content is MultipartContent)
 			{
 				var bytes = request.Content.ReadAsByteArrayAsync().Result;
-				return Utils.ToHex(Utils.Hash(bytes));
+				return Utils.ToHex(HashHelper.GetSha256(bytes));
 			}
 
 			var payload = request.Content != null ? request.Content.ReadAsStringAsync().Result : "";
-			return Utils.ToHex(Utils.Hash(payload));
+			return Utils.ToHex(HashHelper.GetSha256(payload));
 		}
 
 		/// <summary>
@@ -130,7 +131,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 			stringToSign.AppendFormat("AWS4-HMAC-SHA256\n{0}\n{1}\n",
 									  requestDate.ToString(Iso8601DateTimeFormat, CultureInfo.InvariantCulture),
 									  scope);
-			stringToSign.Append(Utils.ToHex(Utils.Hash(canonicalRequest)));
+			stringToSign.Append(Utils.ToHex(HashHelper.GetSha256(canonicalRequest)));
 			return stringToSign.ToString();
 		}
 
@@ -143,16 +144,16 @@ namespace AspNetCore.Yandex.ObjectStorage
 		private string GetSignature(DateTime requestDate, string stringToSign)
 		{
 			var kSigning = GetSigningKey(requestDate);
-			return Utils.ToHex(Utils.GetKeyedHash(kSigning, stringToSign));
+			return Utils.ToHex(HashHelper.GetKeyedHash(kSigning, stringToSign));
 		}
 
 		private byte[] GetSigningKey(DateTime requestDate)
 		{
 			var dateStamp = requestDate.ToString(Iso8601DateFormat, CultureInfo.InvariantCulture);
-			var kDate = Utils.GetKeyedHash("AWS4" + _awsSecretKey, dateStamp);
-			var kRegion = Utils.GetKeyedHash(kDate, _region);
-			var kService = Utils.GetKeyedHash(kRegion, _service);
-			return Utils.GetKeyedHash(kService, "aws4_request");
+			var kDate = HashHelper.GetKeyedHash("AWS4" + _awsSecretKey, dateStamp);
+			var kRegion = HashHelper.GetKeyedHash(kDate, _region);
+			var kService = HashHelper.GetKeyedHash(kRegion, _service);
+			return HashHelper.GetKeyedHash(kService, "aws4_request");
 		}
 
 		private static class Utils
@@ -177,27 +178,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 				return encoded.ToString();
 			}
 
-			public static byte[] Hash(string value)
-			{
-				return SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(value));
-			}
 
-			public static byte[] Hash(byte[] value)
-			{
-				return SHA256.Create().ComputeHash(value);
-			}
-
-			public static byte[] GetKeyedHash(string key, string value)
-			{
-				return GetKeyedHash(Encoding.UTF8.GetBytes(key), value);
-			}
-
-			public static byte[] GetKeyedHash(byte[] key, string value)
-			{
-				KeyedHashAlgorithm mac = new HMACSHA256(key);
-				mac.Initialize();
-				return mac.ComputeHash(Encoding.UTF8.GetBytes(value));
-			}
 
 			public static string ToHex(byte[] data)
 			{

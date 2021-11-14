@@ -1,0 +1,169 @@
+﻿using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using AspNetCore.Yandex.ObjectStorage.Models;
+using Bogus;
+using Xunit;
+
+namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
+{
+    public class ObjectServiceTests
+    {
+        private readonly Faker _faker;
+        private readonly YandexStorageService _yandexStorageService;
+
+        public ObjectServiceTests()
+        {
+            _faker = new Faker("en");
+            _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment());
+        }
+
+        [Fact(DisplayName = "[001] PutObjectAsync - put object as byte array")]
+        public async Task PutObject_AsByteArray_Success()
+        {
+            var fakeObject = _faker.Random.Bytes(100);
+
+            var filename = _faker.Random.String2(15);
+
+            var result = await _yandexStorageService.PutObjectAsync(fakeObject, filename);
+
+            Assert.True(result.IsSuccessStatusCode);
+            Assert.Equal(result.StatusCode, HttpStatusCode.OK);
+
+            var getResult = await GetObjectAsync(filename);
+
+            Assert.Equal(fakeObject, getResult);
+
+            await ClearUploadedAsync(filename);
+        }
+
+        [Fact(DisplayName = "[002] PutObjectAsync - put object as stream")]
+        public async Task PutObject_AsStream_Success()
+        {
+            var fakeObject = _faker.Random.Bytes(100);
+            var filename = _faker.Random.String2(15);
+
+            await using (var ms = new MemoryStream(fakeObject))
+            {
+                ms.Position = 0;
+                _ = await _yandexStorageService.PutObjectAsync(ms, filename);
+            }
+
+            var getResult = await _yandexStorageService.GetAsByteArrayAsync(filename);
+
+            Assert.Equal(fakeObject, getResult);
+
+            await ClearUploadedAsync(filename);
+        }
+
+        [Fact(DisplayName = "[003] GetObjectAsync - GetAsByteArray testing")]
+        public async Task GetObject_GetAsByteArray_Success()
+        {
+            var fakeObject = _faker.Random.Bytes(100);
+            var filename = _faker.Random.String2(15);
+
+            await UploadObjectAsync(fakeObject, filename);
+
+            var getResult = await GetObjectAsync(filename);
+
+            Assert.Equal(fakeObject, getResult);
+
+            await ClearUploadedAsync(filename);
+        }
+
+        [Fact(DisplayName = "[004] GetObjectAsync - GetAsStream testing")]
+        public async Task GetObject_GetAsStream_Success()
+        {
+            const int size = 100;
+
+            var fakeObject = _faker.Random.Bytes(size);
+            var filename = _faker.Random.String2(15);
+
+            await UploadObjectAsync(fakeObject, filename);
+
+            var stream = await _yandexStorageService.GetAsStreamAsync(filename);
+
+            byte[] byteArr;
+            await using (MemoryStream ms = new())
+            {
+                await stream.CopyToAsync(ms);
+                byteArr = ms.ToArray();
+            }
+
+            Assert.Equal(fakeObject, byteArr);
+
+            await ClearUploadedAsync(filename);
+        }
+
+        [Fact(DisplayName = "[005] DeleteObjectAsync - DeleteObject testing")]
+        public async Task DeleteObject_Success()
+        {
+            const int size = 100;
+
+            var fakeObject = _faker.Random.Bytes(size);
+            var filename = _faker.Random.String2(15);
+
+            await UploadObjectAsync(fakeObject, filename);
+
+            var getResult = await GetObjectAsync(filename);
+
+            Assert.NotEmpty(getResult);
+
+            await _yandexStorageService.DeleteObjectAsync(filename);
+
+            var getResultAfterDelete = await TryGetObjectAsync(filename);
+
+            Assert.False(getResultAfterDelete.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, getResultAfterDelete.StatusCode);
+        }
+
+        [Fact(DisplayName = "[006] PutObjectAsync - put big object as stream")]
+        public async Task PutObject_BigObjectAsStream_Success()
+        {
+            var fakeObject = _faker.Random.Bytes(3_000_000);
+            var filename = _faker.Random.String2(15);
+
+            await using (var ms = new MemoryStream(fakeObject))
+            {
+                ms.Position = 0;
+                _ = await _yandexStorageService.PutObjectAsync(ms, filename);
+            }
+
+            var getResult = await _yandexStorageService.GetAsByteArrayAsync(filename);
+
+            Assert.Equal(fakeObject, getResult);
+
+            await ClearUploadedAsync(filename);
+        }
+
+        #region Private
+
+        private async Task<S3GetResponse> TryGetObjectAsync(string filename)
+        {
+            return await _yandexStorageService.TryGetAsync(filename);
+        }
+
+        private async Task<byte[]> GetObjectAsync(string filename)
+        {
+            return await _yandexStorageService.GetAsByteArrayAsync(filename);
+        }
+
+        private async Task ClearUploadedAsync(params string[] filenames)
+        {
+            var deleteTasks = filenames.Select(async filename =>
+            {
+                await _yandexStorageService.DeleteObjectAsync(filename);
+            });
+
+            await Task.WhenAll(deleteTasks);
+        }
+
+        private async Task UploadObjectAsync(byte[] file, string filename)
+        {
+            await _yandexStorageService.PutObjectAsync(file, filename);
+        }
+
+        #endregion
+    }
+}

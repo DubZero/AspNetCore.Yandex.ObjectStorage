@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Yandex.ObjectStorage", "AspNetCore.Yandex.ObjectStorage\AspNetCore.Yandex.ObjectStorage.csproj", "{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "Sample\Sample.csproj", "{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B3BB2E6F-5DE2-4E50-A195-D62E26463C86}"
+ProjectSection(SolutionItems) = preProject
+	deploy.yml = \.github\workflows\deploy.yml
+	README.md = \README.md
+	CHANGELOG.md = \CHANGELOG.md
+	CHANGELOG.md = CHANGELOG.md
+	LICENSE.md = LICENSE.md
+	README.md = README.md
+	.github\workflows\deploy.yml = .github\workflows\deploy.yml
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{88BC1FD3-427E-4EF6-9A1C-C5F84CD53663}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{11D8AA6F-F71B-415A-8E31-038DFF6A9991}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{59542BA4-2986-4B78-968C-ADBFA7B2C47F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Yandex.ObjectStorage.UnitTest", "AspNetCore.Yandex.ObjectStorage.UnitTest\AspNetCore.Yandex.ObjectStorage.UnitTest.csproj", "{9A9F6693-8C38-4674-A29D-A495032A822C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Yandex.ObjectStorage.IntegrationTests", "AspNetCore.Yandex.ObjectStorage.IntegrationTests\AspNetCore.Yandex.ObjectStorage.IntegrationTests.csproj", "{3F16B1EC-216F-4B74-AE34-F27C91CDBA36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A9F6693-8C38-4674-A29D-A495032A822C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A9F6693-8C38-4674-A29D-A495032A822C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A9F6693-8C38-4674-A29D-A495032A822C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A9F6693-8C38-4674-A29D-A495032A822C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F16B1EC-216F-4B74-AE34-F27C91CDBA36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F16B1EC-216F-4B74-AE34-F27C91CDBA36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F16B1EC-216F-4B74-AE34-F27C91CDBA36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F16B1EC-216F-4B74-AE34-F27C91CDBA36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2FF0A15-6270-4095-BAF2-2EB454A220AD}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F7BD83F2-A6EE-4B7B-8E89-B29F3AA43952} = {88BC1FD3-427E-4EF6-9A1C-C5F84CD53663}
+		{CBE22CBC-845C-440E-9EE2-EC0B9D8BD093} = {11D8AA6F-F71B-415A-8E31-038DFF6A9991}
+		{9A9F6693-8C38-4674-A29D-A495032A822C} = {59542BA4-2986-4B78-968C-ADBFA7B2C47F}
+		{3F16B1EC-216F-4B74-AE34-F27C91CDBA36} = {59542BA4-2986-4B78-968C-ADBFA7B2C47F}
+	EndGlobalSection
+EndGlobal
