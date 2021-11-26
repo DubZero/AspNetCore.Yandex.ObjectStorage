@@ -14,5 +14,17 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
                 SecretKey = Environment.GetEnvironmentVariable("SecretKey")
             };
         }
+
+        public static YandexStorageOptions GetFromEnvironmentWithNotDefaultLocation()
+        {
+            return new YandexStorageOptions
+            {
+                BucketName = Environment.GetEnvironmentVariable("BucketName"),
+                AccessKey = Environment.GetEnvironmentVariable("AccessKey"),
+                SecretKey = Environment.GetEnvironmentVariable("SecretKey"),
+                Location = "ru-central1",
+                Endpoint = "s3.yandexcloud.net"
+            };
+        }
     }
 }
