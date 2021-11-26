@@ -17,7 +17,7 @@
     <FileVersion>0.1.8.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageVersion>0.1.8.3-alpha</PackageVersion>
+    <PackageVersion>0.1.8.4</PackageVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
