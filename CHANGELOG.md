@@ -2,14 +2,14 @@
 
 # AspNetCore.Yandex.ObjectStorage changelog
 
-##[1.8.4]
+## [1.8.4]
 ### Changes
 - Going from .net core, .net to .net standart
 - Add some tests to ci pipeline
 ### Fixed
 - Location options, that not equal default not works. fixed.
 
-##[1.8.1]
+## [1.8.1]
 ### Changes
 - Some namespaces changed due to directory nesting
 - **Update .net version to 6.0**
@@ -19,7 +19,7 @@
 ### Fixed
 - Removes warning messages from not implemented methods
 
-##[1.7.6]
+## [1.7.6]
 - HttpClient now is static readonly
 - HttpCompletionOption.ResponseHeadersRead option for GetAsStreamAsync and TryGetAsync
 - Migrate to .net 5.0
