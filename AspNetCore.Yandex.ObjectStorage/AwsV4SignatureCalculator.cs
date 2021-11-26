@@ -21,7 +21,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 		private readonly string _service;
 		private readonly string _region;
 
-		public AwsV4SignatureCalculator(string awsSecretKey, string service = null, string region = null)
+		public AwsV4SignatureCalculator(string awsSecretKey, string region, string service = null)
 		{
 			_awsSecretKey = awsSecretKey;
 			_service = service ?? "s3";
@@ -147,6 +147,9 @@ namespace AspNetCore.Yandex.ObjectStorage
 			return Utils.ToHex(HashHelper.GetKeyedHash(kSigning, stringToSign));
 		}
 
+		/// <summary>
+		/// https://cloud.yandex.com/en/docs/storage/s3/signing-requests
+		/// </summary>
 		private byte[] GetSigningKey(DateTime requestDate)
 		{
 			var dateStamp = requestDate.ToString(Iso8601DateFormat, CultureInfo.InvariantCulture);

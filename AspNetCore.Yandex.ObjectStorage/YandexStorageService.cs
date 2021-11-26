@@ -144,7 +144,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		private HttpRequestMessage PrepareGetRequest()
 		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey);
+			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
 			var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}"));
 			var value = DateTime.UtcNow;
 
@@ -163,7 +163,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		private HttpRequestMessage PrepareGetRequest(string filename)
 		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey);
+			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
 			var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
 			var value = DateTime.UtcNow;
 			requestMessage.Headers.Add("Host", _endpoint);
@@ -181,7 +181,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		private HttpRequestMessage PreparePutRequest(Stream stream, string filename)
 		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey);
+			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
 			var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
 			var value = DateTime.UtcNow;
 			ByteArrayContent content;
@@ -215,7 +215,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		private HttpRequestMessage PreparePutRequest(byte[] byteArr, string filename)
 		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey);
+ 			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
 			var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
 			var value = DateTime.UtcNow;
 			var content = new ByteArrayContent(byteArr);
@@ -237,7 +237,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 
 		private HttpRequestMessage PrepareDeleteRequest(string storageFileName)
 		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey);
+			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
 			var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{storageFileName}"));
 			var value = DateTime.UtcNow;
 			requestMessage.Headers.Add("Host", _endpoint);

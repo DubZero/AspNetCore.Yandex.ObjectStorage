@@ -12,11 +12,13 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
     {
         private readonly Faker _faker;
         private readonly YandexStorageService _yandexStorageService;
+        private readonly YandexStorageService _anotherLocationService;
 
         public ObjectServiceTests()
         {
             _faker = new Faker("en");
             _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment());
+            _anotherLocationService = new YandexStorageService(EnvironmentOptions.GetFromEnvironmentWithNotDefaultLocation());
         }
 
         [Fact(DisplayName = "[001] PutObjectAsync - put object as byte array")]
@@ -131,6 +133,25 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
             }
 
             var getResult = await _yandexStorageService.GetAsByteArrayAsync(filename);
+
+            Assert.Equal(fakeObject, getResult);
+
+            await ClearUploadedAsync(filename);
+        }
+
+        [Fact(DisplayName = "[007] PutObjectAsync - not default location")]
+        public async Task PutObject_NotDefaultLocation_Success()
+        {
+            var fakeObject = _faker.Random.Bytes(100);
+
+            var filename = _faker.Random.String2(15);
+
+            var result = await _anotherLocationService.PutObjectAsync(fakeObject, filename);
+
+            Assert.True(result.IsSuccessStatusCode);
+            Assert.Equal(result.StatusCode, HttpStatusCode.OK);
+
+            var getResult = await _anotherLocationService.GetAsByteArrayAsync(filename);
 
             Assert.Equal(fakeObject, getResult);
 
