@@ -2,6 +2,13 @@
 
 # AspNetCore.Yandex.ObjectStorage changelog
 
+##[1.8.4]
+### Changes
+- Going from .net core, .net to .net standart
+- Add some tests to ci pipeline
+### Fixed
+- Location options, that not equal default not works. fixed.
+
 ##[1.8.1]
 ### Changes
 - Some namespaces changed due to directory nesting
