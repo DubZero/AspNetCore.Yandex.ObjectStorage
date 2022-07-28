@@ -1,19 +1,22 @@
 ﻿using System.Net.Http;
+using System.Threading.Tasks;
+using FluentResults;
 
 namespace AspNetCore.Yandex.ObjectStorage.Models
 {
-    public class S3DeleteResponse : S3Response
+    public class S3DeleteResponse : BaseS3Response
     {
+
         public S3DeleteResponse(HttpResponseMessage response) : base(response)
         {
-            if (response.IsSuccessStatusCode)
-            {
-                Result = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            }
 
-            Error = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
         }
 
-        public bool IsSuccess => IsSuccessStatusCode;
+        public async Task<Result<string>> ReadResultAsStringAsync()
+        {
+            return IsSuccessStatusCode
+                ? Result.Ok(await Response.Content.ReadAsStringAsync())
+                : Result.Fail(await ReadErrorAsync());
+        }
     }
 }

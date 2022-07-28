@@ -11,12 +11,13 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
     public class ObjectServiceTests
     {
         private readonly Faker _faker;
-        private readonly YandexStorageService _yandexStorageService;
-        private readonly YandexStorageService _anotherLocationService;
+        private readonly IYandexStorageService _yandexStorageService;
+        private readonly IYandexStorageService _anotherLocationService;
 
         public ObjectServiceTests()
         {
             _faker = new Faker("en");
+
             _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment());
             _anotherLocationService = new YandexStorageService(EnvironmentOptions.GetFromEnvironmentWithNotDefaultLocation());
         }
@@ -28,10 +29,10 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var filename = _faker.Random.String2(15);
 
-            var result = await _yandexStorageService.PutObjectAsync(fakeObject, filename);
+            var result = await _yandexStorageService.ObjectService.PutAsync(fakeObject, filename);
 
             Assert.True(result.IsSuccessStatusCode);
-            Assert.Equal(result.StatusCode, HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
             var getResult = await GetObjectAsync(filename);
 
@@ -49,10 +50,10 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
             await using (var ms = new MemoryStream(fakeObject))
             {
                 ms.Position = 0;
-                _ = await _yandexStorageService.PutObjectAsync(ms, filename);
+                _ = await _yandexStorageService.ObjectService.PutAsync(ms, filename);
             }
 
-            var getResult = await _yandexStorageService.GetAsByteArrayAsync(filename);
+            var getResult = await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename);
 
             Assert.Equal(fakeObject, getResult);
 
@@ -84,12 +85,14 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             await UploadObjectAsync(fakeObject, filename);
 
-            var stream = await _yandexStorageService.GetAsStreamAsync(filename);
+            var streamResult = await _yandexStorageService.ObjectService.GetAsStreamAsync(filename);
+
+            Assert.True(streamResult.IsSuccess);
 
             byte[] byteArr;
             await using (MemoryStream ms = new())
             {
-                await stream.CopyToAsync(ms);
+                await streamResult.Value.CopyToAsync(ms);
                 byteArr = ms.ToArray();
             }
 
@@ -112,7 +115,7 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             Assert.NotEmpty(getResult);
 
-            await _yandexStorageService.DeleteObjectAsync(filename);
+            await _yandexStorageService.ObjectService.DeleteAsync(filename);
 
             var getResultAfterDelete = await TryGetObjectAsync(filename);
 
@@ -129,10 +132,10 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
             await using (var ms = new MemoryStream(fakeObject))
             {
                 ms.Position = 0;
-                _ = await _yandexStorageService.PutObjectAsync(ms, filename);
+                _ = await _yandexStorageService.ObjectService.PutAsync(ms, filename);
             }
 
-            var getResult = await _yandexStorageService.GetAsByteArrayAsync(filename);
+            var getResult = await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename);
 
             Assert.Equal(fakeObject, getResult);
 
@@ -146,12 +149,12 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var filename = _faker.Random.String2(15);
 
-            var result = await _anotherLocationService.PutObjectAsync(fakeObject, filename);
+            var result = await _anotherLocationService.ObjectService.PutAsync(fakeObject, filename);
 
             Assert.True(result.IsSuccessStatusCode);
-            Assert.Equal(result.StatusCode, HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var getResult = await _anotherLocationService.GetAsByteArrayAsync(filename);
+            var getResult = await _anotherLocationService.ObjectService.GetAsByteArrayAsync(filename);
 
             Assert.Equal(fakeObject, getResult);
 
@@ -167,14 +170,14 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
         private async Task<byte[]> GetObjectAsync(string filename)
         {
-            return await _yandexStorageService.GetAsByteArrayAsync(filename);
+            return (await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename)).Value;
         }
 
         private async Task ClearUploadedAsync(params string[] filenames)
         {
             var deleteTasks = filenames.Select(async filename =>
             {
-                await _yandexStorageService.DeleteObjectAsync(filename);
+                await _yandexStorageService.ObjectService.DeleteAsync(filename);
             });
 
             await Task.WhenAll(deleteTasks);
@@ -182,7 +185,7 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
         private async Task UploadObjectAsync(byte[] file, string filename)
         {
-            await _yandexStorageService.PutObjectAsync(file, filename);
+            await _yandexStorageService.ObjectService.PutAsync(file, filename);
         }
 
         #endregion

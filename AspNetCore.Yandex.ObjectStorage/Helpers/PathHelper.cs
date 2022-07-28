@@ -3,25 +3,25 @@ using System.Text.RegularExpressions;
 
 namespace AspNetCore.Yandex.ObjectStorage.Helpers
 {
-	public static class PathHelper
+	internal static class PathHelper
 	{
-		public static string RemoveProtocol(this string path, string protocol)
+		internal static string RemoveProtocol(this string path, string protocol)
 		{
 			return path.Replace($"{protocol}://", "");
 		}
 
-		public static string RemoveEndPoint(this string path, string endpoint)
+		internal static string RemoveEndPoint(this string path, string endpoint)
 		{
 			return path.Replace($"{endpoint}/", "");
 		}
 
-		public static string RemoveBucket(this string path, string bucket)
+		internal static string RemoveBucket(this string path, string bucket)
 		{
 			var regex = new Regex(Regex.Escape($"{bucket}/"));
 			return regex.Replace(path, "", 1);
 		}
 
-		public static int IndexOfFile(this string path)
+		internal static int IndexOfFile(this string path)
 		{
 			if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(path));
 
@@ -34,7 +34,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Helpers
 			return -1;
 		}
 
-		public static bool IsFileWithPath(this string path)
+		internal static bool IsFileWithPath(this string path)
 		{
 			return IndexOfFile(path) > 0;
 		}

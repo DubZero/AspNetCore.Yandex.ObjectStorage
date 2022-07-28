@@ -1,5 +1,6 @@
 ﻿using System;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
+using AspNetCore.Yandex.ObjectStorage.Object;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
             if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
 
             services.Configure(setupAction);
-            services.AddTransient<YandexStorageService>();
+            services.AddSingleton<YandexStorageService>();
         }
 
         public static void AddYandexObjectStorage(this IServiceCollection services, IConfiguration configuration, string sectionName = YandexConfigurationDefaults.DefaultSectionName)
@@ -21,12 +22,8 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            services.LoadYandexStorageOptions(configuration, sectionName).AddTransient<YandexStorageService>();
-        }
-
-        public static YandexStorageService CreateYandexObjectService(this YandexStorageOptions options)
-        {
-            return new YandexStorageService(options);
+            services.LoadYandexStorageOptions(configuration, sectionName)
+                .AddSingleton<IYandexStorageService, YandexStorageService>();
         }
     }
 }
