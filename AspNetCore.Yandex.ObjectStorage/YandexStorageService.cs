@@ -22,11 +22,13 @@ namespace AspNetCore.Yandex.ObjectStorage
 		private static readonly HttpClient _client = new HttpClient();
 
 		public IObjectService ObjectService { get; }
+		public IBucketService BucketService { get; }
 
 		public YandexStorageService(IOptions<YandexStorageOptions> options)
 		{
 			var yandexStorageOptions = options.Value;
 			ObjectService = new ObjectService(yandexStorageOptions);
+			BucketService = new BucketService(yandexStorageOptions);
 
 			_protocol = yandexStorageOptions.Protocol;
 			_bucketName = yandexStorageOptions.BucketName;
@@ -40,6 +42,7 @@ namespace AspNetCore.Yandex.ObjectStorage
 		public YandexStorageService(YandexStorageOptions options)
 		{
 			ObjectService = new ObjectService(options);
+			BucketService = new BucketService(options);
 			_protocol = options.Protocol;
 			_bucketName = options.BucketName;
 			_location = options.Location;

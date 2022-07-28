@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AspNetCore.Yandex.ObjectStorage.Bucket;
 using AspNetCore.Yandex.ObjectStorage.Models;
 using AspNetCore.Yandex.ObjectStorage.Object;
 
@@ -9,7 +10,7 @@ namespace AspNetCore.Yandex.ObjectStorage
         IObjectService ObjectService { get; }
 
         // Not Implemented
-        //IBucketService BucketService { get; }
+        IBucketService BucketService { get; }
 
         // Not Implemented
         //IMultipartUploadService MultipartUploadService { get; }

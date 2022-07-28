@@ -5,19 +5,19 @@ using AspNetCore.Yandex.ObjectStorage.Helpers;
 
 namespace AspNetCore.Yandex.ObjectStorage.Bucket
 {
-    internal class BucketPutRequestBuilder
+    internal class BucketDeleteRequestBuilder
     {
         private readonly YandexStorageOptions _options;
         private HttpRequestMessage _request;
 
-        internal BucketPutRequestBuilder(YandexStorageOptions options)
+        internal BucketDeleteRequestBuilder(YandexStorageOptions options)
         {
             _options = options;
         }
 
-        internal BucketPutRequestBuilder Build(BucketCreateOptions createModel)
+        internal BucketDeleteRequestBuilder Build(string bucketName)
         {
-            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_options.Protocol}://{_options.Endpoint}/{createModel.BucketName}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri($"{_options.Protocol}://{_options.Endpoint}/{bucketName}"));
             var dateAmz = DateTime.UtcNow;
 
             requestMessage.AddBothHeaders(_options, dateAmz);
