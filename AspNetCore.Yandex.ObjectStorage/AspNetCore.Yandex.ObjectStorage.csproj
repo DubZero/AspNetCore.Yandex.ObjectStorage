@@ -13,11 +13,11 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <SignAssembly>false</SignAssembly>
     <PackageIconUrl>https://yastatic.net/q/cloud-www/build/ru/assets/img/storage.15691e8c.png</PackageIconUrl>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <FileVersion>0.2.0.0</FileVersion>
+    <AssemblyVersion>0.2.0.1</AssemblyVersion>
+    <FileVersion>0.2.0.1</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageVersion>0.2.0.0</PackageVersion>
+    <PackageVersion>0.2.0.1-alpha001</PackageVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Title>Yandex.ObjectStorage S3 API Client Library</Title>
   </PropertyGroup>
