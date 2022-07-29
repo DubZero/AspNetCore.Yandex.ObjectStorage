@@ -44,14 +44,24 @@ string SecretKey
 ## Usage examples
 
 ```
-S3PutResponse response = await _objectStoreService.PutObjectAsync(byteArr, fileName);
-S3DeleteResponse response = await _objectStoreService.DeleteObjectAsync(filename);
+S3PutResponse response = await _objectStoreService.ObjectService.PutAsync(byteArr, fileName);
+S3DeleteResponse response = await _objectStoreService.ObjectService.DeleteAsync(filename);
 ```
 Get can return as Stream or ByteArray
 
 ```
-byte[] byteArr = await _objectStoreService.GetAsByteArrayAsync(fileName);
-Stream stream = await _objectStoreService.GetAsStreamAsync(filename);
+// result is FluentResults wrapped content of result
+var result = await _objectStoreService.ObjectService.GetAsync(fileName);
+if(result.IsSuccess) 
+{
+   byte[] byteArr = await result.ReadAsByteArrayAsync();
+   Stream stream = await result.ReadAsStreamAsync();
+}
+
+if(result.IsFailed)
+{
+   var error = await result.ReadErrorAsync();
+}
 ```
 
 ## List of implemented API methods
