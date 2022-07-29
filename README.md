@@ -56,7 +56,21 @@ Stream stream = await _objectStoreService.GetAsStreamAsync(filename);
 
 ## List of implemented API methods
 
-### Bucket Service ❌ - not implemented
+### Bucket Service 
+- create - Creates a bucket ✅ implemented
+- getMeta - Returns the bucket's metadata or an error ✅ implemented
+- listObjects - Returns a list of bucket objects. Pagination is used for output ✅ implemented
+- listBuckets - Returns a list of buckets available to the user ✅ implemented
+- deleteBucket - Deletes an empty bucket. If the bucket isn't empty, first delete all the objects inside the bucket ✅ implemented
+- getBucketEncryption - ❌ not implemented
+- deleteBucketEncryption - ❌ not implemented
+- putBucketEncryption - ❌ not implemented
+- putBucketVersioning - ❌ not implemented
+- getBucketVersioning - ❌ not implemented
+- putBucketLogging - ❌ not implemented
+- getBucketLogging - ❌ not implemented
+- listObjectVersions - ❌ not implemented
+
 ### Object service
 - upload	Uploads an object to Object Storage. ✅ implemented
 - get	Retrieves an object from Object Storage. ✅ implemented

@@ -8,6 +8,7 @@ using AspNetCore.Yandex.ObjectStorage.Bucket.Responses;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Enums;
 using AspNetCore.Yandex.ObjectStorage.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Models;
 using Microsoft.Extensions.Options;
 
 namespace AspNetCore.Yandex.ObjectStorage.Bucket
@@ -27,7 +28,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
             _options = options;
         }
 
-        public async Task<S3PutResponse> CreateBucket(string bucketName)
+        public async Task<S3ObjectPutResponse> CreateBucket(string bucketName)
         {
             var builder = new BucketPutRequestBuilder(_options);
             var requestMessage = builder.Build(bucketName).GetResult();
@@ -35,12 +36,19 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
             using var client = new HttpClient();
             var response = await client.SendAsync(requestMessage);
 
-            return new S3PutResponse(response, GetBucketUri(bucketName));
+            return new S3ObjectPutResponse(response, GetBucketUri(bucketName));
         }
 
-        public Task<S3GetResponse> GetBucketMeta(string bucketName)
+        public async Task<S3Response> GetBucketMeta(string bucketName)
         {
-            throw new NotImplementedException();
+            var requestMessage = new BucketMetaRequestBuilder(_options)
+                .Build(bucketName)
+                .GetResult();
+
+            using var client = new HttpClient();
+            var response = await client.SendAsync(requestMessage);
+
+            return new S3Response(response);
         }
 
         public async Task<S3BucketObjectListResponse> GetBucketListObjects(BucketListObjectsParameters parameters)
@@ -66,7 +74,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
             return new S3BucketListResponse(response);
         }
 
-        public async Task<S3DeleteResponse> DeleteBucket(string bucketName)
+        public async Task<S3ObjectDeleteResponse> DeleteBucket(string bucketName)
         {
             var builder = new BucketDeleteRequestBuilder(_options);
             var requestMessage = builder.Build(bucketName).GetResult();
@@ -74,7 +82,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
             using var client = new HttpClient();
             var response = await client.SendAsync(requestMessage);
 
-            return new S3DeleteResponse(response);
+            return new S3ObjectDeleteResponse(response);
         }
 
         private string GetBucketUri(string bucket)

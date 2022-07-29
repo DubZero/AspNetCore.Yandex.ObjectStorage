@@ -6,6 +6,7 @@ using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Models;
 using AspNetCore.Yandex.ObjectStorage.Multipart;
 using AspNetCore.Yandex.ObjectStorage.Object;
+using AspNetCore.Yandex.ObjectStorage.Object.Models;
 using Microsoft.Extensions.Options;
 
 namespace AspNetCore.Yandex.ObjectStorage
@@ -52,26 +53,26 @@ namespace AspNetCore.Yandex.ObjectStorage
 			_hostName = options.HostName;
 		}
 
-		public async Task<S3GetResponse> TryConnectAsync()
+		public async Task<S3ObjectGetResponse> TryConnectAsync()
 		{
 			var requestMessage = PrepareGetRequest();
 
 			var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
-			return new S3GetResponse(response);
+			return new S3ObjectGetResponse(response);
 		}
 
 		/// <summary>
 		/// Test connection to storage
 		/// </summary>
 		/// <returns>Retruns true if all credentials correct</returns>
-		public async Task<S3GetResponse> TryGetAsync(string filename)
+		public async Task<S3ObjectGetResponse> TryGetAsync(string filename)
 		{
 			var requestMessage = PrepareGetRequest(filename);
 
 			var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
-			return new S3GetResponse(response);
+			return new S3ObjectGetResponse(response);
 		}
 
 		private HttpRequestMessage PrepareGetRequest()
