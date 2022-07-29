@@ -1,13 +1,14 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AspNetCore.Yandex.ObjectStorage.Models;
 using FluentResults;
 
-namespace AspNetCore.Yandex.ObjectStorage.Models
+namespace AspNetCore.Yandex.ObjectStorage.Object.Models
 {
-    public class S3GetResponse : BaseS3Response
+    public class S3ObjectGetResponse : BaseS3Response
     {
-        public S3GetResponse(HttpResponseMessage response) : base(response)
+        public S3ObjectGetResponse(HttpResponseMessage response) : base(response)
         {
         }
 

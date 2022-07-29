@@ -1,14 +1,15 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using AspNetCore.Yandex.ObjectStorage.Models;
 using FluentResults;
 
-namespace AspNetCore.Yandex.ObjectStorage.Models
+namespace AspNetCore.Yandex.ObjectStorage.Object.Models
 {
-    public class S3PutResponse : BaseS3Response
+    public class S3ObjectPutResponse : BaseS3Response
     {
         private readonly string _url;
 
-        public S3PutResponse(HttpResponseMessage response, string url) : base(response)
+        public S3ObjectPutResponse(HttpResponseMessage response, string url) : base(response)
         {
             _url = url;
         }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AspNetCore.Yandex.ObjectStorage.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Models;
 using Bogus;
 using Xunit;
 
@@ -163,7 +164,7 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
         #region Private
 
-        private async Task<S3GetResponse> TryGetObjectAsync(string filename)
+        private async Task<S3ObjectGetResponse> TryGetObjectAsync(string filename)
         {
             return await _yandexStorageService.TryGetAsync(filename);
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Helpers;
 using AspNetCore.Yandex.ObjectStorage.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Models;
 using FluentResults;
 using Microsoft.Extensions.Options;
 
@@ -45,13 +46,13 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
             _hostName = options.HostName;
         }
 
-        public async Task<S3GetResponse> GetAsync(string filename)
+        public async Task<S3ObjectGetResponse> GetAsync(string filename)
         {
 	        var formattedPath = FormatPath(filename);
 
 	        var requestMessage = PrepareGetRequest(formattedPath);
 
-	        var response = new S3GetResponse(await _client.SendAsync(requestMessage));
+	        var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
 
 	        return response;
         }
@@ -67,7 +68,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 
 	        var requestMessage = PrepareGetRequest(formattedPath);
 
-	        var response = new S3GetResponse(await _client.SendAsync(requestMessage));
+	        var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
 
 	        return await response.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
@@ -82,12 +83,12 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 			var formattedPath = FormatPath(filename);
 			var requestMessage = PrepareGetRequest(formattedPath);
 
-			var response = new S3GetResponse(await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
+			var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
 
 			return await response.ReadAsStreamAsync().ConfigureAwait(false);
         }
 
-        public async Task<S3PutResponse> PutAsync(Stream stream, string filename)
+        public async Task<S3ObjectPutResponse> PutAsync(Stream stream, string filename)
         {
 	        var formattedPath = FormatPath(filename);
 
@@ -95,10 +96,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 
 	        var response = await _client.SendAsync(requestMessage);
 
-	        return new S3PutResponse(response, GetObjectUri(formattedPath));
+	        return new S3ObjectPutResponse(response, GetObjectUri(formattedPath));
         }
 
-        public async Task<S3PutResponse> PutAsync(byte[] byteArr, string filename)
+        public async Task<S3ObjectPutResponse> PutAsync(byte[] byteArr, string filename)
         {
 	        var formattedPath = FormatPath(filename);
 
@@ -106,10 +107,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 
 	        var response = await _client.SendAsync(requestMessage);
 
-	        return new S3PutResponse(response, GetObjectUri(formattedPath));
+	        return new S3ObjectPutResponse(response, GetObjectUri(formattedPath));
         }
 
-        public async Task<S3DeleteResponse> DeleteAsync(string filename)
+        public async Task<S3ObjectDeleteResponse> DeleteAsync(string filename)
         {
 	        var formattedPath = FormatPath(filename);
 
@@ -117,7 +118,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 
 	        var response = await _client.SendAsync(requestMessage);
 
-	        return new S3DeleteResponse(response);
+	        return new S3ObjectDeleteResponse(response);
         }
 
         private HttpRequestMessage PrepareGetRequest()

@@ -2,13 +2,14 @@
 using System.IO;
 using System.Threading.Tasks;
 using AspNetCore.Yandex.ObjectStorage.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Models;
 using FluentResults;
 
 namespace AspNetCore.Yandex.ObjectStorage.Object
 {
     public interface IObjectService
     {
-	    Task<S3GetResponse> GetAsync(string filename);
+	    Task<S3ObjectGetResponse> GetAsync(string filename);
 
 	    Task<Result<byte[]>> GetAsByteArrayAsync(string filename);
 
@@ -25,10 +26,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 		/// </summary>
 		/// <param name="stream">Put ob</param>
 		/// <param name="filename"></param>
-		Task<S3PutResponse> PutAsync(Stream stream, string filename);
+		Task<S3ObjectPutResponse> PutAsync(Stream stream, string filename);
 
-		Task<S3PutResponse> PutAsync(byte[] byteArr, string filename);
+		Task<S3ObjectPutResponse> PutAsync(byte[] byteArr, string filename);
 
-		Task<S3DeleteResponse> DeleteAsync(string filename);
+		Task<S3ObjectDeleteResponse> DeleteAsync(string filename);
     }
 }
