@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AspNetCore.Yandex.ObjectStorage.Bucket.Builders;
+using AspNetCore.Yandex.ObjectStorage.Bucket.Models;
+using AspNetCore.Yandex.ObjectStorage.Bucket.Requests;
+using AspNetCore.Yandex.ObjectStorage.Bucket.Responses;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Enums;
 using AspNetCore.Yandex.ObjectStorage.Models;
@@ -26,11 +30,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
         public async Task<S3PutResponse> CreateBucket(string bucketName)
         {
             var builder = new BucketPutRequestBuilder(_options);
-            var createModel = new BucketCreateOptions
-            {
-                BucketName = bucketName
-            };
-            var requestMessage = builder.Build(createModel).GetResult();
+            var requestMessage = builder.Build(bucketName).GetResult();
 
             using var client = new HttpClient();
             var response = await client.SendAsync(requestMessage);
@@ -43,14 +43,27 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
             throw new NotImplementedException();
         }
 
-        public Task<S3GetResponse> GetBucketListObjects(string bucketName)
+        public async Task<S3BucketObjectListResponse> GetBucketListObjects(BucketListObjectsParameters parameters)
         {
-            throw new NotImplementedException();
+            var builder = new BucketListObjectsRequestBuilder(_options);
+            var requestMessage = builder.Build(parameters).GetResult();
+
+            using var client = new HttpClient();
+            var response = await client.SendAsync(requestMessage);
+
+            return new S3BucketObjectListResponse(response);
         }
 
-        public Task<S3GetResponse> GetBucketList()
+        public async Task<S3BucketListResponse> GetBucketList()
         {
-            throw new NotImplementedException();
+            var requestMessage = new BucketListRequestBuilder(_options)
+                .Build()
+                .GetResult();
+
+            using var client = new HttpClient();
+            var response = await client.SendAsync(requestMessage);
+
+            return new S3BucketListResponse(response);
         }
 
         public async Task<S3DeleteResponse> DeleteBucket(string bucketName)

@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
-using AspNetCore.Yandex.ObjectStorage.Models;
+using AspNetCore.Yandex.ObjectStorage.Bucket.Requests;
 using Bogus;
 using Xunit;
 
@@ -55,6 +53,48 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             Assert.True(deleteResult.IsSuccess);
         }
+
+        [Fact(DisplayName = "[003] List bucket objects")]
+        public async Task ListBucketObjects_Success()
+        {
+            const string bucketName = "testbucketlib";
+
+            var result = await _yandexStorageService.BucketService.GetBucketListObjects(new BucketListObjectsParameters()
+            {
+                BucketName = bucketName
+            });
+
+            Assert.True(result.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+            var listObjectsResult = await result.ReadResultAsync();
+
+            Assert.True(listObjectsResult.IsSuccess);
+
+            var listObjects = listObjectsResult.Value;
+
+            Assert.Equal(2,listObjects.Contents.Count);
+        }
+
+
+        [Fact(DisplayName = "[004] Bucket list")]
+        public async Task BucketList_Success()
+        {
+            var result = await _yandexStorageService.BucketService.GetBucketList();
+
+            Assert.True(result.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+            var bucketListResult = await result.ReadResultAsync();
+
+            Assert.True(bucketListResult.IsSuccess);
+
+            var bucketList = bucketListResult.Value;
+
+            Assert.Single(bucketList.Buckets);
+            Assert.Equal("testbucketlib", bucketList.Buckets[0].Name);
+        }
+
 
         private async Task DeleteBucketAsync(string bucketName)
         {

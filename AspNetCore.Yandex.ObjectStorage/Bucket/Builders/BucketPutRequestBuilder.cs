@@ -3,7 +3,7 @@ using System.Net.Http;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Helpers;
 
-namespace AspNetCore.Yandex.ObjectStorage.Bucket
+namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
 {
     internal class BucketPutRequestBuilder
     {
@@ -15,9 +15,9 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
             _options = options;
         }
 
-        internal BucketPutRequestBuilder Build(BucketCreateOptions createModel)
+        internal BucketPutRequestBuilder Build(string bucketName)
         {
-            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_options.Protocol}://{_options.Endpoint}/{createModel.BucketName}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_options.Protocol}://{_options.Endpoint}/{bucketName}"));
             var dateAmz = DateTime.UtcNow;
 
             requestMessage.AddBothHeaders(_options, dateAmz);

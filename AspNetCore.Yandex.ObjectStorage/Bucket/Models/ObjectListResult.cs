@@ -7,6 +7,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
     /// <summary>
     /// https://cloud.yandex.ru/docs/storage/s3/api-ref/bucket/listobjects#structureV2
     /// </summary>
+    [XmlRoot(ElementName="ListBucketResult", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
     public class ObjectListResult
     {
         /// <summary>
@@ -18,7 +19,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
         /// <summary>
         /// Описание объекта
         /// </summary>
-        [XmlElement(ElementName="Contents")]
+        [XmlElement(ElementName="Contents", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
         public List<Contents> Contents { get; set; }
 
         /// <summary>
@@ -78,7 +79,14 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
         public string StartAfter { get; set; }
     }
 
-    [XmlRoot(ElementName="Contents")]
+
+    [XmlRoot(ElementName="CommonPrefixes")]
+    public class CommonPrefixes
+    {
+        public string Prefix { get; set; }
+    }
+
+    [XmlRoot(ElementName="Contents", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
     public class Contents
     {
         /// <summary>
@@ -88,7 +96,8 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
         /// <summary>
         /// Ключ объекта.
         /// </summary>
-        public string Key { get; set; }
+        [XmlElement(ElementName="Key")]
+        public string Filename { get; set; }
         /// <summary>
         /// Дата и время последнего изменения объекта.
         /// </summary>
@@ -101,10 +110,16 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
         /// Класс хранения объекта: STANDARD или COLD.
         /// </summary>
         public string StorageClass { get; set; }
+
+        public Owner Owner { get; set; }
     }
 
-    [XmlRoot(ElementName="CommonPrefixes")]
-    public class CommonPrefixes {
-        public string Prefix { get; set; }
+    [XmlRoot(ElementName="Owner", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+    public class Owner
+    {
+        [XmlElement(ElementName="ID", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+        public string Id { get; set; }
+        [XmlElement(ElementName="DisplayName", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+        public string DisplayName { get; set; }
     }
 }

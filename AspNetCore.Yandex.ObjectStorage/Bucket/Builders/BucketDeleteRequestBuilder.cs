@@ -3,7 +3,7 @@ using System.Net.Http;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Helpers;
 
-namespace AspNetCore.Yandex.ObjectStorage.Bucket
+namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
 {
     internal class BucketDeleteRequestBuilder
     {

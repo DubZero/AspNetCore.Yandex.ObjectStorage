@@ -9,9 +9,9 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
         {
             return new YandexStorageOptions
             {
-                BucketName = "testbucketlib",
-                AccessKey = "YCAJEmcixPRabFaAWHp-k_RA7",
-                SecretKey = "YCOflzMKw_FF5GjpxX2jMjSz7fgfj7cT_aItejSz"
+                BucketName = Environment.GetEnvironmentVariable("BucketName"),
+                AccessKey = Environment.GetEnvironmentVariable("AccessKey"),
+                SecretKey = Environment.GetEnvironmentVariable("SecretKey")
             };
         }
 
@@ -19,9 +19,9 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
         {
             return new YandexStorageOptions
             {
-                BucketName = "testbucketlib",
-                AccessKey = "YCAJEmcixPRabFaAWHp-k_RA7",
-                SecretKey = "YCOflzMKw_FF5GjpxX2jMjSz7fgfj7cT_aItejSz",
+                BucketName = Environment.GetEnvironmentVariable("BucketName"),
+                AccessKey = Environment.GetEnvironmentVariable("AccessKey"),
+                SecretKey = Environment.GetEnvironmentVariable("SecretKey"),
                 Location = "ru-central1",
                 Endpoint = "s3.yandexcloud.net"
             };
