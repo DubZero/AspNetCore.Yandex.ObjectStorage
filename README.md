@@ -6,9 +6,9 @@
 
 ### How to use
 
-To inject service user extension method `AddYandexObjectStorage` to `IServiceCollection`
+To inject service user extension method `AddYandexObjectStorage` to `IServiceCollection`:
 
-```
+```C#
 services.AddYandexObjectStorage(options =>
 {
   options.BucketName = "bucketName";
@@ -21,7 +21,7 @@ services.AddYandexObjectStorage(options =>
 
 Can load options from `IConfiguratiuonRoot` as: `services.AddYandexObjectStorage(Configuration);`
 by default, it reads a section with the name `YandexObjectStorage`, for example, the section in `appsettings.json` below:
-```
+```json
 "YandexObjectStorage" : {
     "Bucket" : "your-bucket",
     "AccessKey" : "your-access-key",
@@ -32,7 +32,7 @@ by default, it reads a section with the name `YandexObjectStorage`, for example,
 
 Options is a `YandexStorageOptions` class.
 It provides access to setup next properties:
-```
+```C#
 string Protocol - by default -> "https"
 string BucketName
 string Location - by default -> "us-east-1"
@@ -43,13 +43,13 @@ string SecretKey
 
 ## Usage examples
 
-```
+```C#
 S3PutResponse response = await _objectStoreService.ObjectService.PutAsync(byteArr, fileName);
 S3DeleteResponse response = await _objectStoreService.ObjectService.DeleteAsync(filename);
 ```
-Get can return as Stream or ByteArray
+Get can return as Stream or ByteArray:
 
-```
+```C#
 // result is FluentResults wrapped content of result
 var result = await _objectStoreService.ObjectService.GetAsync(fileName);
 if(result.IsSuccess) 
