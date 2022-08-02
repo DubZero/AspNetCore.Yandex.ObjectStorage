@@ -7,86 +7,86 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
     /// <summary>
     /// https://cloud.yandex.ru/docs/storage/s3/api-ref/bucket/listobjects#structureV2
     /// </summary>
-    [XmlRoot(ElementName="ListBucketResult", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+    [XmlRoot(ElementName = "ListBucketResult", Namespace = "http://s3.amazonaws.com/doc/2006-03-01/")]
     public class ObjectListResult
     {
         /// <summary>
         /// Флаг, показывающий все ли результаты возвращены в этом ответе.
         /// </summary>
-        [XmlElement(ElementName="IsTruncated")]
+        [XmlElement(ElementName = "IsTruncated")]
         public bool IsTruncated { get; set; }
 
         /// <summary>
         /// Описание объекта
         /// </summary>
-        [XmlElement(ElementName="Contents", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+        [XmlElement(ElementName = "Contents", Namespace = "http://s3.amazonaws.com/doc/2006-03-01/")]
         public List<Contents> Contents { get; set; }
 
         /// <summary>
         /// Имя бакета.
         /// </summary>
-        [XmlElement(ElementName="Name")]
+        [XmlElement(ElementName = "Name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Значение query-параметра delimiter
         /// </summary>
-        [XmlElement(ElementName="Delimiter")]
+        [XmlElement(ElementName = "Delimiter")]
         public string Delimiter { get; set; }
 
         /// <summary>
         /// Значение query-параметра max-keys
         /// </summary>
-        [XmlElement(ElementName="MaxKeys")]
+        [XmlElement(ElementName = "MaxKeys")]
         public int MaxKeys { get; set; }
 
         /// <summary>
         /// Часть имени ключа, которая определяется при обработке query-параметров delimiter и prefix
         /// </summary>
-        [XmlElement(ElementName="CommonPrefixes")]
+        [XmlElement(ElementName = "CommonPrefixes")]
         public CommonPrefixes CommonPrefixes { get; set; }
 
         /// <summary>
         /// Кодировка, в которой Object Storage представляет ключ в XML-ответе.
         /// </summary>
-        [XmlElement(ElementName="EncodingType")]
+        [XmlElement(ElementName = "EncodingType")]
         public string EncodingType { get; set; }
 
         /// <summary>
         /// Количество ключей, возвращенных запросом.
         /// Количество ключей всегда будет меньше или равно MaxKeys
         /// </summary>
-        [XmlElement(ElementName="KeyCount")]
+        [XmlElement(ElementName = "KeyCount")]
         public int KeyCount { get; set; }
 
         /// <summary>
         /// Значение query-параметра continuation-token.
         /// </summary>
-        [XmlElement(ElementName="ContinuationToken")]
+        [XmlElement(ElementName = "ContinuationToken")]
         public string ContinuationToken { get; set; }
 
         /// <summary>
         /// Значение, которое надо подставить в query-параметр continuation-token для получения следующей части списка, если весь список не поместился в текущий ответ.
         /// возвращается только в том случае, если IsTruncated = true
         /// </summary>
-        [XmlElement(ElementName="NextContinuationToken")]
+        [XmlElement(ElementName = "NextContinuationToken")]
         public string NextContinuationToken { get; set; }
 
         /// <summary>
         /// Значение query-параметра start-after
         /// </summary>
-        [XmlElement(ElementName="StartAfter")]
+        [XmlElement(ElementName = "StartAfter")]
         public string StartAfter { get; set; }
     }
 
 
-    [XmlRoot(ElementName="CommonPrefixes")]
+    [XmlRoot(ElementName = "CommonPrefixes")]
     public class CommonPrefixes
     {
         public string Prefix { get; set; }
     }
 
-    [XmlRoot(ElementName="Contents", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+    [XmlRoot(ElementName = "Contents", Namespace = "http://s3.amazonaws.com/doc/2006-03-01/")]
     public class Contents
     {
         /// <summary>
@@ -96,7 +96,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
         /// <summary>
         /// Ключ объекта.
         /// </summary>
-        [XmlElement(ElementName="Key")]
+        [XmlElement(ElementName = "Key")]
         public string Filename { get; set; }
         /// <summary>
         /// Дата и время последнего изменения объекта.
@@ -114,12 +114,12 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Models
         public Owner Owner { get; set; }
     }
 
-    [XmlRoot(ElementName="Owner", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+    [XmlRoot(ElementName = "Owner", Namespace = "http://s3.amazonaws.com/doc/2006-03-01/")]
     public class Owner
     {
-        [XmlElement(ElementName="ID", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+        [XmlElement(ElementName = "ID", Namespace = "http://s3.amazonaws.com/doc/2006-03-01/")]
         public string Id { get; set; }
-        [XmlElement(ElementName="DisplayName", Namespace="http://s3.amazonaws.com/doc/2006-03-01/")]
+        [XmlElement(ElementName = "DisplayName", Namespace = "http://s3.amazonaws.com/doc/2006-03-01/")]
         public string DisplayName { get; set; }
     }
 }

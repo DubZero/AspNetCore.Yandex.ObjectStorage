@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using AspNetCore.Yandex.ObjectStorage.Models;
-using AspNetCore.Yandex.ObjectStorage.Object.Models;
+
+using AspNetCore.Yandex.ObjectStorage.Object.Parameters;
+using AspNetCore.Yandex.ObjectStorage.Object.Responses;
+
 using Bogus;
+
 using Xunit;
 
 namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
@@ -56,7 +60,7 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var getResult = await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename);
 
-            Assert.Equal(fakeObject, getResult);
+            Assert.Equal(fakeObject, getResult.Value);
 
             await ClearUploadedAsync(filename);
         }
@@ -138,7 +142,7 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var getResult = await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename);
 
-            Assert.Equal(fakeObject, getResult);
+            Assert.Equal(fakeObject, getResult.Value);
 
             await ClearUploadedAsync(filename);
         }
@@ -150,16 +154,50 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var filename = _faker.Random.String2(15);
 
-            var result = await _anotherLocationService.ObjectService.PutAsync(fakeObject, filename);
+            var result = await _yandexStorageService.ObjectService.PutAsync(fakeObject, filename);
 
             Assert.True(result.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var getResult = await _anotherLocationService.ObjectService.GetAsByteArrayAsync(filename);
+            var getResult = await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename);
 
-            Assert.Equal(fakeObject, getResult);
+            Assert.Equal(fakeObject, getResult.Value);
 
             await ClearUploadedAsync(filename);
+        }
+
+        [Fact(DisplayName = "[008] Delete Multiple objects - quite is true")]
+        public async Task DeleteMultipleObjects_Success()
+        {
+            var fakeObject1 = _faker.Random.Bytes(100);
+            var fakeObject2 = _faker.Random.Bytes(100);
+
+            var filename1 = _faker.Random.String2(15);
+            var filename2 = _faker.Random.String2(15);
+
+            await UploadObjectAsync(fakeObject1, filename1);
+            await UploadObjectAsync(fakeObject2, filename2);
+
+            var deleteRequest = new DeleteMultipleObjectsParameters
+            {
+                IsQuite = true,
+                DeleteObjects = new List<DeleteObject>()
+                {
+                    new() { Key = filename1 },
+                    new() { Key = filename2 }
+                }
+            };
+
+            var response = await _yandexStorageService.ObjectService.DeleteMultipleAsync(deleteRequest);
+
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var deleteResult = await response.ReadResultAsync();
+
+            Assert.True(deleteResult.IsSuccess);
+            Assert.True(deleteResult.Value.Deleted.Any(p => p.Key == filename1));
+            Assert.True(deleteResult.Value.Deleted.Any(p => p.Key == filename2));
         }
 
         #region Private

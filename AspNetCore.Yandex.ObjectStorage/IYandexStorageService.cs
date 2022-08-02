@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
+
 using AspNetCore.Yandex.ObjectStorage.Bucket;
-using AspNetCore.Yandex.ObjectStorage.Models;
 using AspNetCore.Yandex.ObjectStorage.Object;
-using AspNetCore.Yandex.ObjectStorage.Object.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Responses;
 
 namespace AspNetCore.Yandex.ObjectStorage
 {

@@ -1,5 +1,7 @@
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
+
 using AspNetCore.Yandex.ObjectStorage.Bucket.Requests;
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Helpers;
@@ -16,17 +18,17 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
             _options = options;
         }
 
-        internal BucketListObjectsRequestBuilder Build(BucketListObjectsParameters parameters)
+        internal async Task<BucketListObjectsRequestBuilder> BuildAsync(BucketListObjectsParameters parameters)
         {
             var url = $"{_options.Protocol}://{_options.Endpoint}/{parameters.BucketName}?{FormatParameters(parameters)}";
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(url));
             var dateAmz = DateTime.UtcNow;
 
-            requestMessage.AddBothHeaders(_options, dateAmz);
+            await requestMessage.AddBothHeadersAsync(_options, dateAmz);
 
             string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-            requestMessage.AddAuthHeader(_options, dateAmz, headers);
+            await requestMessage.AddAuthHeaderAsync(_options, dateAmz, headers);
             _request = requestMessage;
 
             return this;

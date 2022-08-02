@@ -27,4 +27,8 @@
       <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+
 </Project>

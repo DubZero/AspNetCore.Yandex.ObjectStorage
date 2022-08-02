@@ -24,4 +24,8 @@
       <ProjectReference Include="..\AspNetCore.Yandex.ObjectStorage\AspNetCore.Yandex.ObjectStorage.csproj" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+
 </Project>

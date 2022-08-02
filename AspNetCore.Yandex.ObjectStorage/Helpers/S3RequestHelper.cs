@@ -1,23 +1,25 @@
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
+
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 
 namespace AspNetCore.Yandex.ObjectStorage.Helpers
 {
     internal static class S3RequestHelper
     {
-        internal static void AddBothHeaders(this HttpRequestMessage request, YandexStorageOptions options, DateTime dateAmz)
+        internal static async Task AddBothHeadersAsync(this HttpRequestMessage request, YandexStorageOptions options, DateTime dateAmz)
         {
-            request.AddHost(options.Endpoint)
-                .AddPayloadHash()
+            (await request.AddHost(options.Endpoint)
+                .AddPayloadHashAsync())
                 .AddAmzDate(dateAmz);
         }
 
-        internal static void AddAuthHeader(this HttpRequestMessage request, YandexStorageOptions options,
+        internal static async Task AddAuthHeaderAsync(this HttpRequestMessage request, YandexStorageOptions options,
             DateTime dateAmz, string[] headers)
         {
             var calculator = new AwsV4SignatureCalculator(options.SecretKey, options.Location);
-            var signature = calculator.CalculateSignature(request, headers, dateAmz);
+            var signature = await calculator.CalculateSignatureAsync(request, headers, dateAmz);
             var authHeader = $"AWS4-HMAC-SHA256 Credential={options.AccessKey}/{dateAmz:yyyyMMdd}/us-east-1/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
             request.Headers.TryAddWithoutValidation("Authorization", authHeader);
@@ -30,9 +32,9 @@ namespace AspNetCore.Yandex.ObjectStorage.Helpers
             return request;
         }
 
-        private static HttpRequestMessage AddPayloadHash(this HttpRequestMessage request)
+        private static async Task<HttpRequestMessage> AddPayloadHashAsync(this HttpRequestMessage request)
         {
-            request.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(request));
+            request.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(request));
 
             return request;
         }

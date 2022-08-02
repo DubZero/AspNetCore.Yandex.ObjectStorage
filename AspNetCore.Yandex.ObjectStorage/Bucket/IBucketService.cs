@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+
 using AspNetCore.Yandex.ObjectStorage.Bucket.Requests;
 using AspNetCore.Yandex.ObjectStorage.Bucket.Responses;
 using AspNetCore.Yandex.ObjectStorage.Models;
-using AspNetCore.Yandex.ObjectStorage.Object.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Responses;
 
 namespace AspNetCore.Yandex.ObjectStorage.Bucket
 {
@@ -17,7 +18,6 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
         ///   2. Whether the user has sufficient permissions to access the bucket
         /// </summary>
         Task<S3Response> GetBucketMeta(string bucketName);
-
 
         /// <summary>
         /// Get list of objects in bucket

@@ -1,12 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
+
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 using AspNetCore.Yandex.ObjectStorage.Helpers;
-using AspNetCore.Yandex.ObjectStorage.Models;
-using AspNetCore.Yandex.ObjectStorage.Object.Models;
+using AspNetCore.Yandex.ObjectStorage.Object.Parameters;
+using AspNetCore.Yandex.ObjectStorage.Object.Responses;
+
 using FluentResults;
+
 using Microsoft.Extensions.Options;
 
 namespace AspNetCore.Yandex.ObjectStorage.Object
@@ -48,13 +54,13 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
 
         public async Task<S3ObjectGetResponse> GetAsync(string filename)
         {
-	        var formattedPath = FormatPath(filename);
+            var formattedPath = FormatPath(filename);
 
-	        var requestMessage = PrepareGetRequest(formattedPath);
+            var requestMessage = await PrepareGetRequestAsync(formattedPath);
 
-	        var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
+            var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
 
-	        return response;
+            return response;
         }
 
         /// <summary>
@@ -64,13 +70,13 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         /// <returns>File object array</returns>
         public async Task<Result<byte[]>> GetAsByteArrayAsync(string filename)
         {
-	        var formattedPath = FormatPath(filename);
+            var formattedPath = FormatPath(filename);
 
-	        var requestMessage = PrepareGetRequest(formattedPath);
+            var requestMessage = await PrepareGetRequestAsync(formattedPath);
 
-	        var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
+            var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
 
-	        return await response.ReadAsByteArrayAsync().ConfigureAwait(false);
+            return await response.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -80,165 +86,188 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         /// <returns>Stream</returns>
         public async Task<Result<Stream>> GetAsStreamAsync(string filename)
         {
-			var formattedPath = FormatPath(filename);
-			var requestMessage = PrepareGetRequest(formattedPath);
+            var formattedPath = FormatPath(filename);
+            var requestMessage = await PrepareGetRequestAsync(formattedPath);
 
-			var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
+            var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
 
-			return await response.ReadAsStreamAsync().ConfigureAwait(false);
+            return await response.ReadAsStreamAsync().ConfigureAwait(false);
         }
 
         public async Task<S3ObjectPutResponse> PutAsync(Stream stream, string filename)
         {
-	        var formattedPath = FormatPath(filename);
+            var formattedPath = FormatPath(filename);
 
-	        var requestMessage = PreparePutRequest(stream, formattedPath);
+            var requestMessage = await PreparePutRequestAsync(stream, formattedPath);
 
-	        var response = await _client.SendAsync(requestMessage);
+            var response = await _client.SendAsync(requestMessage);
 
-	        return new S3ObjectPutResponse(response, GetObjectUri(formattedPath));
+            return new S3ObjectPutResponse(response, GetObjectUri(formattedPath));
         }
 
         public async Task<S3ObjectPutResponse> PutAsync(byte[] byteArr, string filename)
         {
-	        var formattedPath = FormatPath(filename);
+            var formattedPath = FormatPath(filename);
 
-	        var requestMessage = PreparePutRequest(byteArr, formattedPath);
+            var requestMessage = await PreparePutRequestAsync(byteArr, formattedPath);
 
-	        var response = await _client.SendAsync(requestMessage);
+            var response = await _client.SendAsync(requestMessage);
 
-	        return new S3ObjectPutResponse(response, GetObjectUri(formattedPath));
+            return new S3ObjectPutResponse(response, GetObjectUri(formattedPath));
         }
 
         public async Task<S3ObjectDeleteResponse> DeleteAsync(string filename)
         {
-	        var formattedPath = FormatPath(filename);
+            var formattedPath = FormatPath(filename);
 
-	        var requestMessage = PrepareDeleteRequest(formattedPath);
+            var requestMessage = await PrepareDeleteRequestAsync(formattedPath);
 
-	        var response = await _client.SendAsync(requestMessage);
+            var response = await _client.SendAsync(requestMessage);
 
-	        return new S3ObjectDeleteResponse(response);
+            return new S3ObjectDeleteResponse(response);
         }
 
-        private HttpRequestMessage PrepareGetRequest()
-		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-			var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}"));
-			var value = DateTime.UtcNow;
+        public async Task<S3MultipleObjectDeleteResponse> DeleteMultipleAsync(DeleteMultipleObjectsParameters parameters)
+        {
+            var requestMessage = await PrepareDeleteMultipleRequestAsync(parameters);
 
-			requestMessage.Headers.Add("Host", _endpoint);
-			requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-			requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            var response = await _client.SendAsync(requestMessage);
 
-			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+            return new S3MultipleObjectDeleteResponse(response);
+        }
 
-			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+        private async Task<HttpRequestMessage> PrepareGetRequestAsync(string filename)
+        {
+            var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var value = DateTime.UtcNow;
+            requestMessage.Headers.Add("Host", _endpoint);
+            requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
+            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
 
-			return requestMessage;
-		}
+            string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
+            var signature = await calculator.CalculateSignatureAsync(requestMessage, headers, value);
+            var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
-		private HttpRequestMessage PrepareGetRequest(string filename)
-		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-			var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
-			var value = DateTime.UtcNow;
-			requestMessage.Headers.Add("Host", _endpoint);
-			requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-			requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
-			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+            return requestMessage;
+        }
 
-			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+        private async Task<HttpRequestMessage> PreparePutRequestAsync(Stream stream, string filename)
+        {
+            var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var value = DateTime.UtcNow;
+            ByteArrayContent content;
+            if (stream is MemoryStream ms)
+            {
+                content = new ByteArrayContent(ms.ToArray());
+            }
+            else
+            {
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                content = new ByteArrayContent(memoryStream.ToArray());
+            }
 
-			return requestMessage;
-		}
+            requestMessage.Content = content;
+            await stream.DisposeAsync();
 
-		private HttpRequestMessage PreparePutRequest(Stream stream, string filename)
-		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-			var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
-			var value = DateTime.UtcNow;
-			ByteArrayContent content;
-			if (stream is MemoryStream ms)
-			{
-				content = new ByteArrayContent(ms.ToArray());
-			}
-			else
-			{
-				using var memoryStream = new MemoryStream();
-				stream.CopyTo(memoryStream);
-				content = new ByteArrayContent(memoryStream.ToArray());
-			}
+            requestMessage.Headers.Add("Host", _endpoint);
+            requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
+            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
 
-			requestMessage.Content = content;
-			stream.Dispose();
+            string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
+            var signature = await calculator.CalculateSignatureAsync(requestMessage, headers, value);
+            var headersString = string.Join(";", headers);
+            var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={headersString}, Signature={signature}";
 
-			requestMessage.Headers.Add("Host", _endpoint);
-			requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-			requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
-			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var headersString = string.Join(";", headers);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={headersString}, Signature={signature}";
+            return requestMessage;
+        }
 
-			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+        private async Task<HttpRequestMessage> PreparePutRequestAsync(byte[] byteArr, string filename)
+        {
+            var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var value = DateTime.UtcNow;
+            var content = new ByteArrayContent(byteArr);
 
-			return requestMessage;
-		}
+            requestMessage.Content = content;
 
-		private HttpRequestMessage PreparePutRequest(byte[] byteArr, string filename)
-		{
- 			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-			var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
-			var value = DateTime.UtcNow;
-			var content = new ByteArrayContent(byteArr);
+            requestMessage.Headers.Add("Host", _endpoint);
+            requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
+            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
 
-			requestMessage.Content = content;
+            string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
+            var signature = await calculator.CalculateSignatureAsync(requestMessage, headers, value);
+            var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
-			requestMessage.Headers.Add("Host", _endpoint);
-			requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-			requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
-			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+            return requestMessage;
+        }
 
-			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+        private async Task<HttpRequestMessage> PrepareDeleteRequestAsync(string storageFileName)
+        {
+            var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{storageFileName}"));
+            var value = DateTime.UtcNow;
+            requestMessage.Headers.Add("Host", _endpoint);
+            requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
+            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
 
-			return requestMessage;
-		}
+            string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
+            var signature = await calculator.CalculateSignatureAsync(requestMessage, headers, value);
+            var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
 
-		private HttpRequestMessage PrepareDeleteRequest(string storageFileName)
-		{
-			var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-			var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{storageFileName}"));
-			var value = DateTime.UtcNow;
-			requestMessage.Headers.Add("Host", _endpoint);
-			requestMessage.Headers.Add("X-Amz-Content-Sha256", AwsV4SignatureCalculator.GetPayloadHash(requestMessage));
-			requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
 
-			string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
-			var signature = calculator.CalculateSignature(requestMessage, headers, value);
-			var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+            return requestMessage;
+        }
 
-			requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+        private async Task<HttpRequestMessage> PrepareDeleteMultipleRequestAsync(DeleteMultipleObjectsParameters parameters)
+        {
+            var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri($"{_protocol}://{_endpoint}/{_bucketName}?delete"));
+            var value = DateTime.UtcNow;
 
-			return requestMessage;
-		}
-		private string GetObjectUri(string filename)
-		{
-			return $"{_hostName}/{filename}";
-		}
+            var xmlSerializer = new XmlSerializer(typeof(DeleteMultipleObjectsParameters));
+            StringContent content;
+            using (var ms = new MemoryStream())
+            using (var tw = new XmlTextWriter(ms, Encoding.UTF8))
+            {
+                tw.Formatting = Formatting.Indented;
+                xmlSerializer.Serialize(tw, parameters);
 
-		private string FormatPath(string path)
-		{
-			return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
-		}
+                content = new StringContent(Encoding.UTF8.GetString(ms.ToArray()), Encoding.UTF8, "text/xml");
+            }
+
+            requestMessage.Content = content;
+
+            requestMessage.Headers.Add("Host", _endpoint);
+            requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
+            requestMessage.Headers.Add("X-Amz-Date", $"{value:yyyyMMddTHHmmssZ}");
+
+            string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
+            var signature = await calculator.CalculateSignatureAsync(requestMessage, headers, value);
+            var authHeader = $"AWS4-HMAC-SHA256 Credential={_accessKey}/{value:yyyyMMdd}/{_location}/s3/aws4_request, SignedHeaders={string.Join(";", headers)}, Signature={signature}";
+
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authHeader);
+
+            return requestMessage;
+        }
+
+        private string GetObjectUri(string filename)
+        {
+            return $"{_hostName}/{filename}";
+        }
+
+        private string FormatPath(string path)
+        {
+            return path.RemoveProtocol(_protocol).RemoveEndPoint(_endpoint).RemoveBucket(_bucketName);
+        }
     }
 }
