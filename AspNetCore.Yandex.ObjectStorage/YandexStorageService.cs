@@ -19,7 +19,6 @@ namespace AspNetCore.Yandex.ObjectStorage
         private readonly string _endpoint;
         private readonly string _accessKey;
         private readonly string _secretKey;
-        private readonly string _hostName;
         private static readonly HttpClient _client = new HttpClient();
 
         public IObjectService ObjectService { get; }
@@ -37,7 +36,6 @@ namespace AspNetCore.Yandex.ObjectStorage
             _endpoint = yandexStorageOptions.Endpoint;
             _accessKey = yandexStorageOptions.AccessKey;
             _secretKey = yandexStorageOptions.SecretKey;
-            _hostName = yandexStorageOptions.HostName;
         }
 
         public YandexStorageService(YandexStorageOptions options)
@@ -50,7 +48,6 @@ namespace AspNetCore.Yandex.ObjectStorage
             _endpoint = options.Endpoint;
             _accessKey = options.AccessKey;
             _secretKey = options.SecretKey;
-            _hostName = options.HostName;
         }
 
         public async Task<S3ObjectGetResponse> TryConnectAsync()

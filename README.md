@@ -45,8 +45,8 @@ string SecretKey
 ## Usage examples
 
 ```
-S3PutResponse response = await _objectStoreService.ObjectService.PutAsync(byteArr, fileName);
-S3DeleteResponse response = await _objectStoreService.ObjectService.DeleteAsync(filename);
+S3ObjectPutResponse response = await _objectStoreService.ObjectService.PutAsync(byteArr, fileName);
+S3ObjectDeleteResponse response = await _objectStoreService.ObjectService.DeleteAsync(filename);
 ```
 
 Get can return as Stream or ByteArray
