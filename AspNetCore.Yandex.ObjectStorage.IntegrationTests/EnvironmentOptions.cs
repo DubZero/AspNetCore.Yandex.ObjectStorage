@@ -1,4 +1,5 @@
 ﻿using System;
+
 using AspNetCore.Yandex.ObjectStorage.Configuration;
 
 namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests

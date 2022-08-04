@@ -1,9 +1,11 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+
 using AspNetCore.Yandex.ObjectStorage.Models;
+
 using FluentResults;
 
-namespace AspNetCore.Yandex.ObjectStorage.Object.Models
+namespace AspNetCore.Yandex.ObjectStorage.Object.Responses
 {
     public class S3ObjectPutResponse : BaseS3Response
     {

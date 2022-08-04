@@ -1,7 +1,11 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+
 using AspNetCore.Yandex.ObjectStorage.Bucket.Requests;
+
 using Bogus;
+
 using Xunit;
 
 namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
@@ -73,7 +77,7 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var listObjects = listObjectsResult.Value;
 
-            Assert.Equal(2,listObjects.Contents.Count);
+            Assert.Equal(2, listObjects.Contents.Count);
         }
 
 
@@ -91,8 +95,8 @@ namespace AspNetCore.Yandex.ObjectStorage.IntegrationTests
 
             var bucketList = bucketListResult.Value;
 
-            Assert.Single(bucketList.Buckets);
-            Assert.Equal("testbucketlib", bucketList.Buckets[0].Name);
+            Assert.NotEmpty(bucketList.Buckets);
+            Assert.True(bucketList.Buckets.Any(p => p.Name == "testbucketlib"));
         }
 
 
