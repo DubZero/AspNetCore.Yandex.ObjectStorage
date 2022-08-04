@@ -8,7 +8,7 @@
 
 To inject service user extension method `AddYandexObjectStorage` to `IServiceCollection`
 
-```
+```csharp
 services.AddYandexObjectStorage(options =>
 {
   options.BucketName = "bucketName";
@@ -21,13 +21,14 @@ services.AddYandexObjectStorage(options =>
 
 Can load options from `IConfiguratiuonRoot` as: `services.AddYandexObjectStorage(Configuration);`
 by default, it reads a section with the name `YandexObjectStorage`, for example, the section in `appsettings.json` below:
-```
-"YandexObjectStorage" :
+```json
+"YandexObjectStorage":
 {
     "Bucket" : "your-bucket",
     "AccessKey" : "your-access-key",
     "SecretKey" : "your-secret-key",
-    "Protocol" : "http"
+    "Protocol" : "https",
+    "Location" : "us-east-1"
 }
 ```
 
@@ -44,14 +45,14 @@ string SecretKey
 
 ## Usage examples
 
-```
+```csharp
 S3ObjectPutResponse response = await _objectStoreService.ObjectService.PutAsync(byteArr, fileName);
 S3ObjectDeleteResponse response = await _objectStoreService.ObjectService.DeleteAsync(filename);
 ```
 
 Get can return as Stream or ByteArray
 
-```
+```csharp
 // result is FluentResults wrapped content of result
 var result = await _objectStoreService.ObjectService.GetAsync(fileName);
 if(result.IsSuccess) 
