@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.2.0-alpha001</Version>
+    <Version>0.2.2.0-alpha002</Version>
     <Authors>Shumkin Alexandr</Authors>
     <Description>S3 API realisation for Yandex Object Storage</Description>
     <PackageProjectUrl>https://github.com/DubZero/AspNetCore.Yandex.ObjectStorage</PackageProjectUrl>
@@ -17,7 +17,7 @@
     <FileVersion>0.2.2</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageVersion>0.2.2.0-alpha001</PackageVersion>
+    <PackageVersion>0.2.2.0-alpha002</PackageVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Title>Yandex.ObjectStorage S3 API Client Library</Title>
     <Nullable>enable</Nullable>
@@ -32,12 +32,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentResults" Version="3.8.0" />
+    <PackageReference Include="FluentResults" Version="3.15.2" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
