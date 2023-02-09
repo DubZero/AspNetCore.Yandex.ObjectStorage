@@ -10,7 +10,6 @@ namespace AspNetCore.Yandex.ObjectStorage
     {
         IObjectService ObjectService { get; }
 
-        // Not Implemented
         IBucketService BucketService { get; }
 
         // Not Implemented
