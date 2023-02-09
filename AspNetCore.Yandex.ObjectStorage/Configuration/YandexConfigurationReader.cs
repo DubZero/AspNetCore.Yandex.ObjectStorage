@@ -12,18 +12,19 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
             return new YandexStorageOptions(section);
         }
 
+
         public static IServiceCollection LoadYandexStorageOptions(this IServiceCollection services, IConfiguration configuration, string sectionName)
         {
-            var readedOptions = configuration.GetYandexStorageOptions(sectionName);
+            var readOptions = configuration.GetYandexStorageOptions(sectionName);
 
             services.Configure<YandexStorageOptions>(options =>
             {
-                options.BucketName = readedOptions.BucketName;
-                options.Location = readedOptions.Location;
-                options.AccessKey = readedOptions.AccessKey;
-                options.SecretKey = readedOptions.SecretKey;
-                options.Endpoint = readedOptions.Endpoint;
-                options.Protocol = readedOptions.Protocol;
+                options.BucketName = readOptions.BucketName;
+                options.Location = readOptions.Location;
+                options.AccessKey = readOptions.AccessKey;
+                options.SecretKey = readOptions.SecretKey;
+                options.Endpoint = readOptions.Endpoint;
+                options.Protocol = readOptions.Protocol;
             });
 
             return services;

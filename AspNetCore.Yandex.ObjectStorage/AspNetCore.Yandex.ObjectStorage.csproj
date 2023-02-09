@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.2.0</Version>
+    <Version>0.2.2.0-alpha001</Version>
     <Authors>Shumkin Alexandr</Authors>
     <Description>S3 API realisation for Yandex Object Storage</Description>
     <PackageProjectUrl>https://github.com/DubZero/AspNetCore.Yandex.ObjectStorage</PackageProjectUrl>
@@ -17,9 +17,10 @@
     <FileVersion>0.2.2</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageVersion>0.2.2.0</PackageVersion>
+    <PackageVersion>0.2.2.0-alpha001</PackageVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Title>Yandex.ObjectStorage S3 API Client Library</Title>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

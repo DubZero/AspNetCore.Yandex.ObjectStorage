@@ -21,7 +21,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            services.Configure(setupAction);
+            services.AddOptions<YandexStorageOptions>()
+                .Configure(setupAction)
+                .Validate(Validate);
+
             services.AddSingleton<YandexStorageService>();
         }
 
@@ -39,6 +42,11 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
 
             services.LoadYandexStorageOptions(configuration, sectionName)
                 .AddSingleton<IYandexStorageService, YandexStorageService>();
+        }
+
+        private static bool Validate(YandexStorageOptions options)
+        {
+            return new YandexStorageOptionsValidator().Validate(options);
         }
     }
 }
