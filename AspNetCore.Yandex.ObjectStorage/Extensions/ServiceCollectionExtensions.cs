@@ -25,10 +25,13 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
                 .Configure(setupAction)
                 .Validate(Validate);
 
-            services.AddSingleton<YandexStorageService>();
+            services.AddHttpClient<IYandexStorageService, YandexStorageService>();
+            services.AddScoped<IYandexStorageService, YandexStorageService>();
         }
 
-        public static void AddYandexObjectStorage(this IServiceCollection services, IConfiguration configuration, string sectionName = YandexConfigurationDefaults.DefaultSectionName)
+        public static void AddYandexObjectStorage(this IServiceCollection services,
+            IConfiguration configuration,
+            string sectionName = YandexConfigurationDefaults.DefaultSectionName)
         {
             if (services == null)
             {
@@ -41,7 +44,9 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
             }
 
             services.LoadYandexStorageOptions(configuration, sectionName)
-                .AddSingleton<IYandexStorageService, YandexStorageService>();
+                .AddHttpClient<IYandexStorageService, YandexStorageService>();
+
+            services.AddScoped<IYandexStorageService, YandexStorageService>();
         }
 
         private static bool Validate(YandexStorageOptions options)

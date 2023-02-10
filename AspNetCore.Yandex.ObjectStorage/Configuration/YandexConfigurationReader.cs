@@ -17,6 +17,8 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
         {
             var readOptions = configuration.GetYandexStorageOptions(sectionName);
 
+            new YandexStorageOptionsValidator().ValidateOrThrow(readOptions);
+
             services.Configure<YandexStorageOptions>(options =>
             {
                 options.BucketName = readOptions.BucketName;

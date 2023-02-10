@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Extensions.Options;
@@ -53,7 +52,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
 
             if (!_protocolCorrectValues.Contains(options.Protocol))
             {
-                errors.Add($"`{nameof(options.Protocol)}` must be on of `{string.Join(", ", "_protocolCorrectValues)}`")}");
+                errors.Add($"`{nameof(options.Protocol)}` must be one of `{string.Join(", ", _protocolCorrectValues)}`");
             }
 
             return errors.Any()
