@@ -46,7 +46,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
 
         private static bool Validate(YandexStorageOptions options)
         {
-            return new YandexStorageOptionsValidator().Validate(options);
+            return new YandexStorageOptionsValidator().ValidateOrThrow(options);
         }
     }
 }
