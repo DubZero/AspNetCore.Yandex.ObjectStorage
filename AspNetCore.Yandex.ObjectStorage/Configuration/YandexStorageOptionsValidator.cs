@@ -20,6 +20,11 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
                     errors);
             }
 
+            if (string.IsNullOrWhiteSpace(options.BucketName))
+            {
+                errors.Add($"Input value `{nameof(options.BucketName)}` can't be `null`");
+            }
+
             if (string.IsNullOrWhiteSpace(options.HostName))
             {
                 errors.Add($"Input value `{nameof(options.HostName)}` can't be `null`");

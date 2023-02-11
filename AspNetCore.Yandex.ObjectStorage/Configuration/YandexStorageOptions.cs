@@ -10,9 +10,9 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
 
         public YandexStorageOptions(IConfigurationSection section)
         {
-            BucketName = section.GetSection("Bucket").Value;
-            AccessKey = section.GetSection("AccessKey").Value;
-            SecretKey = section.GetSection("SecretKey").Value;
+            BucketName = section.GetSection("Bucket").Value ?? string.Empty;
+            AccessKey = section.GetSection("AccessKey").Value ?? string.Empty;
+            SecretKey = section.GetSection("SecretKey").Value ?? string.Empty;
 
             Protocol = section.GetSection("Protocol")?.Value ?? YandexStorageDefaults.Protocol;
             Location = section.GetSection("Location")?.Value ?? YandexStorageDefaults.Location;
