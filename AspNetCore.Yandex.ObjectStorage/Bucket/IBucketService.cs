@@ -9,7 +9,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
 {
     public interface IBucketService
     {
-        Task<S3ObjectPutResponse> CreateBucket(string bucketName);
+        Task<S3ObjectPutResponse> CreateAsync(string bucketName);
 
         /// <summary>
         /// Returns the bucket's metadata or an error.
@@ -17,18 +17,18 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
         ///   1. Whether the bucket exists.
         ///   2. Whether the user has sufficient permissions to access the bucket
         /// </summary>
-        Task<S3Response> GetBucketMeta(string bucketName);
+        Task<S3Response> GetBucketMetaAsync(string bucketName);
 
         /// <summary>
         /// Get list of objects in bucket
         /// </summary>
-        Task<S3BucketObjectListResponse> GetBucketListObjects(BucketListObjectsParameters parameters);
+        Task<S3BucketObjectListResponse> GetBucketListObjectsAsync(BucketListObjectsParameters parameters);
 
         /// <summary>
         /// Get list of buckets
         /// </summary>
-        Task<S3BucketListResponse> GetBucketList();
+        Task<S3BucketListResponse> GetAllAsync();
 
-        Task<S3ObjectDeleteResponse> DeleteBucket(string bucketName);
+        Task<S3ObjectDeleteResponse> DeleteAsync(string bucketName);
     }
 }

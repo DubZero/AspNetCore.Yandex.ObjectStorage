@@ -21,11 +21,17 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            services.Configure(setupAction);
-            services.AddSingleton<YandexStorageService>();
+            services.AddOptions<YandexStorageOptions>()
+                .Configure(setupAction)
+                .Validate(Validate);
+
+            services.AddHttpClient<IYandexStorageService, YandexStorageService>();
+            services.AddScoped<IYandexStorageService, YandexStorageService>();
         }
 
-        public static void AddYandexObjectStorage(this IServiceCollection services, IConfiguration configuration, string sectionName = YandexConfigurationDefaults.DefaultSectionName)
+        public static void AddYandexObjectStorage(this IServiceCollection services,
+            IConfiguration configuration,
+            string sectionName = YandexConfigurationDefaults.DefaultSectionName)
         {
             if (services == null)
             {
@@ -38,7 +44,14 @@ namespace AspNetCore.Yandex.ObjectStorage.Extensions
             }
 
             services.LoadYandexStorageOptions(configuration, sectionName)
-                .AddSingleton<IYandexStorageService, YandexStorageService>();
+                .AddHttpClient<IYandexStorageService, YandexStorageService>();
+
+            services.AddScoped<IYandexStorageService, YandexStorageService>();
+        }
+
+        private static bool Validate(YandexStorageOptions options)
+        {
+            return new YandexStorageOptionsValidator().ValidateOrThrow(options);
         }
     }
 }
