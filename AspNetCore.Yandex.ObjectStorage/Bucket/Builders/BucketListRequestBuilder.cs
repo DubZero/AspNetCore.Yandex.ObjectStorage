@@ -10,7 +10,6 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
     internal class BucketListRequestBuilder
     {
         private readonly YandexStorageOptions _options;
-        private HttpRequestMessage _request;
         private readonly Version _httpRequestVersion;
 
         internal BucketListRequestBuilder(YandexStorageOptions options)
@@ -19,7 +18,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
             _httpRequestVersion = options.UseHttp2 ? new Version(2, 0) : new Version(1, 1);
         }
 
-        internal async Task<BucketListRequestBuilder> BuildAsync()
+        internal async Task<HttpRequestMessage> BuildAsync()
         {
             var url = $"{_options.Protocol}://{_options.Endpoint}";
 
@@ -33,14 +32,8 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
 
             string[] headers = { "host", "x-amz-content-sha256", "x-amz-date" };
             await requestMessage.AddAuthHeaderAsync(_options, dateAmz, headers);
-            _request = requestMessage;
 
-            return this;
-        }
-
-        internal HttpRequestMessage GetResult()
-        {
-            return _request;
+            return requestMessage;
         }
     }
 }

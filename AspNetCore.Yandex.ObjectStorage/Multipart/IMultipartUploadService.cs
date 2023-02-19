@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading.Tasks;
 
+using AspNetCore.Yandex.ObjectStorage.Multipart.Responses;
+
 namespace AspNetCore.Yandex.ObjectStorage.Multipart
 {
     public interface IMultipartUploadService
@@ -15,7 +17,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Multipart
         /// <returns></returns>
         public async Task<string> MultipartAsync(Stream stream, string filename, int partSize = 6000)
         {
-            var startResult = await StartUpload(filename);
+            var startResult = await StartUploadAsync(filename);
 
             throw new NotImplementedException();
         }
@@ -40,7 +42,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Multipart
 
             // Отправляем запрос на завершение загрузки
 
-            var startResult = await StartUpload(filename);
+            var startResult = await StartUploadAsync(filename);
 
             throw new NotImplementedException();
         }
@@ -55,63 +57,25 @@ namespace AspNetCore.Yandex.ObjectStorage.Multipart
                 var position = await stream.ReadAsync(part, offset, partSize);
                 offset += partSize;
                 partNumber += 1;
-                await UploadPart(part, partNumber, startResponse.UploadId);
+                await UploadPartAsync(part, partNumber, startResponse.UploadId);
                 part = new byte[partSize];
             }
 
             return true;
         }
 
-        public Task<InitiateMultipartUploadResult> StartUpload(string filename);
+        public Task<S3InitiateMultipartUploadResult> StartUploadAsync(string filename);
 
-        public Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId);
+        public Task<string> UploadPartAsync(byte[] filePart, int partNumber, string uploadId);
 
-        public Task<string> CopyPart(byte[] filePart, int partNumber, string uploadId);
+        public Task<string> CopyPartAsync(byte[] filePart, int partNumber, string uploadId);
 
-        public Task<string> ListParts(byte[] filePart, int partNumber, string uploadId);
+        public Task<string> ListPartsAsync(byte[] filePart, int partNumber, string uploadId);
 
-        public Task<string> AbortUpload(byte[] filePart, int partNumber, string uploadId);
+        public Task<string> AbortUploadAsync(byte[] filePart, int partNumber, string uploadId);
 
-        public Task<string> CompleteUpload(byte[] filePart, int partNumber, string uploadId);
+        public Task<string> CompleteUploadAsync(byte[] filePart, int partNumber, string uploadId);
 
-        public Task<string> ListUploads(byte[] filePart, int partNumber, string uploadId);
-    }
-
-    internal class MultipartUploadService : IMultipartUploadService
-    {
-        public async Task<InitiateMultipartUploadResult> StartUpload(string filename)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<string> UploadPart(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<string> CopyPart(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<string> ListParts(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<string> AbortUpload(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<string> CompleteUpload(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<string> ListUploads(byte[] filePart, int partNumber, string uploadId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<string> ListUploadsAsync(byte[] filePart, int partNumber, string uploadId);
     }
 }

@@ -62,4 +62,8 @@
       <_Parameter1>AspNetCore.Yandex.ObjectStorage.IntegrationTests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Multipart\Requests" />
+  </ItemGroup>
 </Project>

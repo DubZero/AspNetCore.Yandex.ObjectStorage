@@ -31,9 +31,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
 
         public async Task<S3ObjectPutResponse> CreateAsync(string bucketName)
         {
-            var builder = new BucketPutRequestBuilder(_options);
-            await builder.BuildAsync(bucketName);
-            var requestMessage = builder.GetResult();
+            var requestMessage = await new BucketPutRequestBuilder(_options).BuildAsync(bucketName);
 
             var response = await _client.SendAsync(requestMessage);
 
@@ -42,9 +40,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
 
         public async Task<S3Response> GetBucketMetaAsync(string bucketName)
         {
-            var builder = await new BucketMetaRequestBuilder(_options).BuildAsync(bucketName);
-
-            var requestMessage = builder.GetResult();
+            var requestMessage = await new BucketMetaRequestBuilder(_options).BuildAsync(bucketName);
 
             var response = await _client.SendAsync(requestMessage);
 
@@ -53,9 +49,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
 
         public async Task<S3BucketObjectListResponse> GetBucketListObjectsAsync(BucketListObjectsParameters parameters)
         {
-            var builder = await new BucketListObjectsRequestBuilder(_options).BuildAsync(parameters);
-            var requestMessage = builder.GetResult();
-
+            var requestMessage = await new BucketListObjectsRequestBuilder(_options).BuildAsync(parameters);
             var response = await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
             return new S3BucketObjectListResponse(response);
@@ -63,8 +57,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
 
         public async Task<S3BucketListResponse> GetAllAsync()
         {
-            var builder = await new BucketListRequestBuilder(_options).BuildAsync();
-            var requestMessage = builder.GetResult();
+            var requestMessage = await new BucketListRequestBuilder(_options).BuildAsync();
 
             var response = await _client.SendAsync(requestMessage);
 
@@ -73,8 +66,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket
 
         public async Task<S3ObjectDeleteResponse> DeleteAsync(string bucketName)
         {
-            var builder = await new BucketDeleteRequestBuilder(_options).BuildAsync(bucketName);
-            var requestMessage = builder.GetResult();
+            var requestMessage = await new BucketDeleteRequestBuilder(_options).BuildAsync(bucketName);
 
             var response = await _client.SendAsync(requestMessage);
 
