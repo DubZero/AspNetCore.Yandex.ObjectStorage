@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCore.Yandex.ObjectStorage.Configuration
 {
-    public static class YandexConfigurationReaderExtension
+    internal static class YandexConfigurationReaderExtension
     {
-        public static YandexStorageOptions GetYandexStorageOptions(this IConfiguration configuration, string sectionName)
+        private static YandexStorageOptions GetYandexStorageOptions(this IConfiguration configuration, string sectionName)
         {
             var section = configuration.GetSection(sectionName);
 
@@ -13,7 +13,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
         }
 
 
-        public static IServiceCollection LoadYandexStorageOptions(this IServiceCollection services, IConfiguration configuration, string sectionName)
+        internal static IServiceCollection LoadYandexStorageOptions(this IServiceCollection services, IConfiguration configuration, string sectionName)
         {
             var readOptions = configuration.GetYandexStorageOptions(sectionName);
 
@@ -27,6 +27,7 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
                 options.SecretKey = readOptions.SecretKey;
                 options.Endpoint = readOptions.Endpoint;
                 options.Protocol = readOptions.Protocol;
+                options.UseHttp2 = readOptions.UseHttp2;
             });
 
             return services;

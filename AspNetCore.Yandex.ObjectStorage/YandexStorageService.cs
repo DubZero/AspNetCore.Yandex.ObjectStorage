@@ -20,6 +20,7 @@ namespace AspNetCore.Yandex.ObjectStorage
         private readonly string _accessKey;
         private readonly string _secretKey;
         private readonly HttpClient _client;
+        private readonly Version _httpRequestVersion;
 
         public IObjectService ObjectService { get; }
         public IBucketService BucketService { get; }
@@ -27,8 +28,8 @@ namespace AspNetCore.Yandex.ObjectStorage
         public YandexStorageService(IOptions<YandexStorageOptions> options, HttpClient client)
         {
             var yandexStorageOptions = options.Value;
-            ObjectService = new ObjectService(yandexStorageOptions);
-            BucketService = new BucketService(yandexStorageOptions);
+            ObjectService = new ObjectService(yandexStorageOptions, client);
+            BucketService = new BucketService(yandexStorageOptions, client);
             _client = client;
             _protocol = yandexStorageOptions.Protocol;
             _bucketName = yandexStorageOptions.BucketName;
@@ -36,18 +37,21 @@ namespace AspNetCore.Yandex.ObjectStorage
             _endpoint = yandexStorageOptions.Endpoint;
             _accessKey = yandexStorageOptions.AccessKey;
             _secretKey = yandexStorageOptions.SecretKey;
+            _httpRequestVersion = yandexStorageOptions.UseHttp2 ? new Version(2, 0) : new Version(1, 1);
         }
 
-        public YandexStorageService(YandexStorageOptions options)
+        public YandexStorageService(YandexStorageOptions options, HttpClient client)
         {
-            ObjectService = new ObjectService(options);
-            BucketService = new BucketService(options);
+            ObjectService = new ObjectService(options, client);
+            BucketService = new BucketService(options, client);
             _protocol = options.Protocol;
             _bucketName = options.BucketName;
             _location = options.Location;
             _endpoint = options.Endpoint;
             _accessKey = options.AccessKey;
             _secretKey = options.SecretKey;
+            _client = client;
+            _httpRequestVersion = options.UseHttp2 ? new Version(2, 0) : new Version(1, 1);
         }
 
         public async Task<S3ObjectGetResponse> TryConnectAsync()
@@ -75,7 +79,10 @@ namespace AspNetCore.Yandex.ObjectStorage
         private async Task<HttpRequestMessage> PrepareGetRequestAsync()
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
 
             requestMessage.Headers.Add("Host", _endpoint);
@@ -94,7 +101,10 @@ namespace AspNetCore.Yandex.ObjectStorage
         private async Task<HttpRequestMessage> PrepareGetRequestAsync(string filename)
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
             requestMessage.Headers.Add("Host", _endpoint);
             requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));

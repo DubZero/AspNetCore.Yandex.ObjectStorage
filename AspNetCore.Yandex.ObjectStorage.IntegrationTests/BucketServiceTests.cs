@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using AspNetCore.Yandex.ObjectStorage.Bucket.Requests;
@@ -18,8 +19,8 @@ public class BucketServiceTests
     public BucketServiceTests()
     {
         _faker = new Faker("en");
-
-        _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment());
+        var httpClient = new HttpClient();
+        _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment(), httpClient);
     }
 
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using AspNetCore.Yandex.ObjectStorage.Object.Parameters;
@@ -22,9 +23,9 @@ public class ObjectServiceTests
     public ObjectServiceTests()
     {
         _faker = new Faker("en");
-
-        _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment());
-        _anotherLocationService = new YandexStorageService(EnvironmentOptions.GetFromEnvironmentWithNotDefaultLocation());
+        var httpClient = new HttpClient();
+        _yandexStorageService = new YandexStorageService(EnvironmentOptions.GetFromEnvironment(), httpClient);
+        _anotherLocationService = new YandexStorageService(EnvironmentOptions.GetFromEnvironmentWithNotDefaultLocation(), httpClient);
     }
 
     [Fact(DisplayName = "[001] PutAsync - put object as byte array.")]
@@ -159,7 +160,7 @@ public class ObjectServiceTests
         Assert.True(result.IsSuccessStatusCode);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-        var getResult = await _yandexStorageService.ObjectService.GetAsByteArrayAsync(filename);
+        var getResult = await _anotherLocationService.ObjectService.GetAsByteArrayAsync(filename);
 
         Assert.Equal(fakeObject, getResult.Value);
 

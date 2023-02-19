@@ -16,6 +16,7 @@ ProjectSection(SolutionItems) = preProject
 	LICENSE.md = LICENSE.md
 	README.md = README.md
 	.github\workflows\deploy.yml = .github\workflows\deploy.yml
+	.github\workflows\build.yml = .github\workflows\build.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{88BC1FD3-427E-4EF6-9A1C-C5F84CD53663}"
