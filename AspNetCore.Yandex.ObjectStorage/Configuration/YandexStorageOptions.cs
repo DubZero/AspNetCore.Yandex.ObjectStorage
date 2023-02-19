@@ -10,13 +10,18 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
 
         public YandexStorageOptions(IConfigurationSection section)
         {
-            BucketName = section.GetSection("Bucket").Value;
-            AccessKey = section.GetSection("AccessKey").Value;
-            SecretKey = section.GetSection("SecretKey").Value;
+            BucketName = section.GetSection("Bucket").Value ?? string.Empty;
+            AccessKey = section.GetSection("AccessKey").Value ?? string.Empty;
+            SecretKey = section.GetSection("SecretKey").Value ?? string.Empty;
 
-            Protocol = section.GetSection("Protocol")?.Value ?? YandexStorageDefaults.Protocol;
-            Location = section.GetSection("Location")?.Value ?? YandexStorageDefaults.Location;
-            Endpoint = section.GetSection("Endpoint")?.Value ?? YandexStorageDefaults.EndPoint;
+            Protocol = section.GetSection("Protocol").Value ?? YandexStorageDefaults.Protocol;
+            Location = section.GetSection("Location").Value ?? YandexStorageDefaults.Location;
+            Endpoint = section.GetSection("Endpoint").Value ?? YandexStorageDefaults.EndPoint;
+
+            if(bool.TryParse(section.GetSection("UseHttp2").Value, out var useHttp2))
+            {
+                UseHttp2 = useHttp2;
+            }
         }
 
         /// <summary>
@@ -43,5 +48,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Configuration
         public string SecretKey { get; set; }
 
         public string HostName => $"{Protocol}://{Endpoint}/{BucketName}";
+
+        /// <summary>
+        /// Use http2, true by default
+        /// </summary>
+        public bool UseHttp2 { get; set; } = true;
     }
 }

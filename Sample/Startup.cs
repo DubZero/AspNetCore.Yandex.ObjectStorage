@@ -21,6 +21,15 @@ namespace Sample
         {
             services.AddOptions();
 
+            // 1. Way one
+            // services.AddYandexObjectStorage(cfg =>
+            // {
+            //     cfg.AccessKey = "your-bucket";
+            //     cfg.BucketName = "your-access-key";
+            //     cfg.SecretKey = "your-secret-key";
+            // });
+
+            // 2. Way two
             services.AddYandexObjectStorage(Configuration);
         }
 

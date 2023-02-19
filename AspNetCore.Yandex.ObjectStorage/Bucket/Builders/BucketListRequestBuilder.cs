@@ -11,17 +11,22 @@ namespace AspNetCore.Yandex.ObjectStorage.Bucket.Builders
     {
         private readonly YandexStorageOptions _options;
         private HttpRequestMessage _request;
+        private readonly Version _httpRequestVersion;
 
         internal BucketListRequestBuilder(YandexStorageOptions options)
         {
             _options = options;
+            _httpRequestVersion = options.UseHttp2 ? new Version(2, 0) : new Version(1, 1);
         }
 
         internal async Task<BucketListRequestBuilder> BuildAsync()
         {
             var url = $"{_options.Protocol}://{_options.Endpoint}";
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(url));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(url))
+            {
+                Version = _httpRequestVersion
+            };
             var dateAmz = DateTime.UtcNow;
 
             await requestMessage.AddBothHeadersAsync(_options, dateAmz);

@@ -3,7 +3,7 @@ name: "Build"
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ master, development ]
 
 env:
   PROJECT_PATH: 'AspNetCore.Yandex.ObjectStorage/AspNetCore.Yandex.ObjectStorage.csproj'
@@ -11,18 +11,18 @@ env:
 jobs:
   build:
     name: 'Test build'
-      runs-on: 'windows-latest'
-      steps:
-        - name: 'Checkout'
-          uses: actions/checkout@v2
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
 
-        - name: 'Install dotnet'
-          uses: actions/setup-dotnet@v1
-          with:
-            dotnet-version: '6.0.x'
+      - name: 'Install dotnet'
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
 
-        - name: 'Restore packages'
-          run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: 'Restore packages'
+        run: dotnet restore ${{ env.PROJECT_PATH }}
 
-        - name: 'Build project'
-          run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+      - name: 'Build project'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release

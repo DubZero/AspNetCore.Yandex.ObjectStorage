@@ -6,24 +6,24 @@ on:
     - 'v*'
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, development ]
 
 env:
   PROJECT_PATH: 'AspNetCore.Yandex.ObjectStorage/AspNetCore.Yandex.ObjectStorage.csproj'
   TEST_PROJECT_PATH: './AspNetCore.Yandex.ObjectStorage.sln'
-  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\bin\Release
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\/bin\/Release
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
 
 jobs:
   deploy:
     name: 'Deploy'
-    runs-on: 'windows-latest'
+    runs-on: 'ubuntu-latest'
     steps:
     - name: 'Checkout'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: 'Install dotnet'
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '6.0.x'
 
@@ -44,4 +44,4 @@ jobs:
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
 
     - name: 'Push package'
-      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
+      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\/*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
