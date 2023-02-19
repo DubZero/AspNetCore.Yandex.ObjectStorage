@@ -28,7 +28,8 @@ by default, it reads a section with the name `YandexObjectStorage`, for example,
     "AccessKey" : "your-access-key",
     "SecretKey" : "your-secret-key",
     "Protocol" : "https",
-    "Location" : "us-east-1"
+    "Location" : "us-east-1",
+    "UseHttp2" : true
 }
 ```
 
@@ -41,6 +42,7 @@ string Location - by default -> "us-east-1"
 string Endpoint - by default -> "storage.yandexcloud.net"
 string AccessKey
 string SecretKey
+boolean UseHttp2 - by default -> true
 ```
 
 ## Usage examples

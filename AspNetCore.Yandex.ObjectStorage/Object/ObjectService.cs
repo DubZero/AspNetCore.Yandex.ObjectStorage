@@ -26,12 +26,14 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         private readonly string _accessKey;
         private readonly string _secretKey;
         private readonly string _hostName;
-        private static readonly HttpClient _client = new HttpClient();
+        private readonly HttpClient _client;
+        private readonly Version _httpRequestVersion;
 
-        public ObjectService(IOptions<YandexStorageOptions> options)
+        public ObjectService(IOptions<YandexStorageOptions> options, HttpClient client)
         {
             var yandexStorageOptions = options.Value;
 
+            _client = client;
             _protocol = yandexStorageOptions.Protocol;
             _bucketName = yandexStorageOptions.BucketName;
             _location = yandexStorageOptions.Location;
@@ -39,9 +41,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
             _accessKey = yandexStorageOptions.AccessKey;
             _secretKey = yandexStorageOptions.SecretKey;
             _hostName = yandexStorageOptions.HostName;
+            _httpRequestVersion = yandexStorageOptions.UseHttp2 ? new Version(2, 0) : new Version(1, 1);
         }
 
-        public ObjectService(YandexStorageOptions options)
+        public ObjectService(YandexStorageOptions options, HttpClient client)
         {
             _protocol = options.Protocol;
             _bucketName = options.BucketName;
@@ -50,15 +53,15 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
             _accessKey = options.AccessKey;
             _secretKey = options.SecretKey;
             _hostName = options.HostName;
+            _client = client;
+            _httpRequestVersion = options.UseHttp2 ? new Version(2, 0) : new Version(1, 1);
         }
 
         public async Task<S3ObjectGetResponse> GetAsync(string filename)
         {
             var formattedPath = FormatPath(filename);
-
             var requestMessage = await PrepareGetRequestAsync(formattedPath);
-
-            var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage));
+            var response = new S3ObjectGetResponse(await _client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
 
             return response;
         }
@@ -139,7 +142,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         private async Task<HttpRequestMessage> PrepareGetRequestAsync(string filename)
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
             requestMessage.Headers.Add("Host", _endpoint);
             requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
@@ -157,7 +163,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         private async Task<HttpRequestMessage> PreparePutRequestAsync(Stream stream, string filename)
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
             ByteArrayContent content;
             if (stream is MemoryStream ms)
@@ -191,7 +200,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         private async Task<HttpRequestMessage> PreparePutRequestAsync(byte[] byteArr, string filename)
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{filename}"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
             var content = new ByteArrayContent(byteArr);
 
@@ -213,7 +225,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         private async Task<HttpRequestMessage> PrepareDeleteRequestAsync(string storageFileName)
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{storageFileName}"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, new Uri($"{_protocol}://{_endpoint}/{_bucketName}/{storageFileName}"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
             requestMessage.Headers.Add("Host", _endpoint);
             requestMessage.Headers.Add("X-Amz-Content-Sha256", await AwsV4SignatureCalculator.GetPayloadHashAsync(requestMessage));
@@ -231,7 +246,10 @@ namespace AspNetCore.Yandex.ObjectStorage.Object
         private async Task<HttpRequestMessage> PrepareDeleteMultipleRequestAsync(DeleteMultipleObjectsParameters parameters)
         {
             var calculator = new AwsV4SignatureCalculator(_secretKey, _location);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri($"{_protocol}://{_endpoint}/{_bucketName}?delete"));
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri($"{_protocol}://{_endpoint}/{_bucketName}?delete"))
+            {
+                Version = _httpRequestVersion
+            };
             var value = DateTime.UtcNow;
 
             var xmlSerializer = new XmlSerializer(typeof(DeleteMultipleObjectsParameters));
